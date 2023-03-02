@@ -1,4 +1,4 @@
-namespace Omp.Net.Shared;
+namespace Omp.Net.Shared.Enums;
 
 public enum GameKey
 {
