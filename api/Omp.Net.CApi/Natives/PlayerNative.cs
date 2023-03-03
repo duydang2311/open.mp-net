@@ -143,43 +143,53 @@ internal static partial class PlayerNative
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion, CharSet = CharSet.Ansi)]
 	public static extern int Player_CreateTextDraw(int playerid, float x, float y, [MarshalAs(UnmanagedType.LPStr)] string text);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
-	public static extern bool PlayerTextDrawDestroy(int playerid, int textId);
+	public static extern int Player_CreatePreviewModelTextDraw(int playerid, float x, float y, int model);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
-	public static extern bool PlayerTextDrawLetterSize(int playerid, int textId, float x, float y);
+	public static extern bool Player_DestroyTextDraw(int playerid, int textid);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
-	public static extern bool PlayerTextDrawTextSize(int playerid, int textId, float x, float y);
+	public static extern bool Player_SetTextDrawPosition(int playerid, int textid, float x, float y);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
-	public static extern bool PlayerTextDrawAlignment(int playerid, int textId, int alignment);
+	public static extern bool Player_SetTextDrawLetterSize(int playerid, int textid, float x, float y);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
-	public static extern bool PlayerTextDrawColor(int playerid, int textId, int color);
+	public static extern bool Player_SetTextDrawTextSize(int playerid, int textid, float x, float y);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
-	public static extern bool PlayerTextDrawUseBox(int playerid, int textId, bool use);
+	public static extern bool Player_SetTextDrawAlignment(int playerid, int textid, int alignment);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
-	public static extern bool PlayerTextDrawBoxColor(int playerid, int textId, int color);
+	public static extern bool Player_SetTextDrawColor(int playerid, int textid, uint argb);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
-	public static extern bool PlayerTextDrawSetShadow(int playerid, int textId, int size);
+	public static extern bool Player_SetTextDrawUseBox(int playerid, int textid, bool use);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
-	public static extern bool PlayerTextDrawSetOutline(int playerid, int textId, int size);
+	public static extern bool Player_SetTextDrawBoxColor(int playerid, int textid, uint argb);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
-	public static extern bool PlayerTextDrawBackgroundColor(int playerid, int textId, int color);
+	public static extern bool Player_SetTextDrawShadow(int playerid, int textid, int size);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
-	public static extern bool PlayerTextDrawFont(int playerid, int textId, int font);
+	public static extern bool Player_SetTextDrawOutline(int playerid, int textid, int size);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
-	public static extern bool PlayerTextDrawSetProportional(int playerid, int textId, bool set);
+	public static extern bool Player_SetTextDrawBackgroundColor(int playerid, int textid, uint argb);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
-	public static extern bool PlayerTextDrawSetSelectable(int playerid, int textId, bool set);
+	public static extern bool Player_SetTextDrawStyle(int playerid, int textid, int style);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
-	public static extern bool PlayerTextDrawShow(int playerid, int textId);
+	public static extern bool Player_SetTextDrawProportional(int playerid, int textid, bool proportional);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
-	public static extern bool PlayerTextDrawHide(int playerid, int textId);
+	public static extern bool Player_SetTextDrawSelectable(int playerid, int textid, bool selectable);
+	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
+	public static extern bool Player_ShowTextDraw(int playerid, int textid);
+	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
+	public static extern bool Player_HideTextDraw(int playerid, int textid);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion, CharSet = CharSet.Ansi)]
-	public static extern bool PlayerTextDrawSetString(int playerid, int textId, [MarshalAs(UnmanagedType.LPStr)] string text);
+	public static extern bool Player_SetTextDrawText(int playerid, int textid, [MarshalAs(UnmanagedType.LPStr)] string text);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
-	public static extern bool PlayerTextDrawSetPreviewModel(int playerid, int textId, int modelindex);
+	public static extern bool Player_SetTextDrawPreviewModel(int playerid, int textid, int model);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
-	public static extern bool PlayerTextDrawSetPreviewRot(int playerid, int textId, float rotX, float rotY, float rotZ, float zoom = 1);
+	public static extern bool Player_SetTextDrawPreviewRotation(int playerid, int textid, float rot_x, float rot_y, float rot_z);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
-	public static extern bool PlayerTextDrawSetPreviewVehCol(int playerid, int textId, int color1, int color2);
+	public static extern bool Player_SetTextDrawPreviewZoom(int playerid, int textid, float zoom);
+	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
+	public static extern bool Player_SetTextDrawPreviewVehiclePrimaryColor(int playerid, int textid, int color);
+	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
+	public static extern bool Player_SetTextDrawPreviewVehicleSecondaryColor(int playerid, int textid, int color);
+	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
+	public static extern bool Player_RestreamTextDraw(int playerid, int textid);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion, CharSet = CharSet.Ansi)]
 	public static extern bool Player_SetPVarInt(int playerid, [MarshalAs(UnmanagedType.LPStr)] string varname, int value);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion, CharSet = CharSet.Ansi)]
