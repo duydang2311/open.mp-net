@@ -1,4 +1,4 @@
-namespace Omp.Net.Shared;
+namespace Omp.Net.Shared.Enums;
 
 public enum GameKey
 {
@@ -22,6 +22,7 @@ public enum GameKey
 	Yes = 65536,
 	No = 131072,
 	CtrlBack = 262144,
+
 	Up = -128,
 	Down = 128,
 	Left = -128,

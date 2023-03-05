@@ -61,4 +61,5 @@ public static class GameConstants
 	public const int MaxGameTextStyle = 16;
 	public const uint InvalidModelId = 65535u;
 	public const int QuestionMarkModelId = 18631;
+	public const byte MaxIpv4Length = 16;
 }
