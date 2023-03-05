@@ -1,9 +1,9 @@
 using System.Drawing;
 using System.Numerics;
-using Omp.Net.Shared.Enums;
-using static Omp.Net.CApi.Natives.PlayerNative;
 using System.Runtime.InteropServices;
 using Omp.Net.Shared.Data;
+using Omp.Net.Shared.Enums;
+using static Omp.Net.CApi.Natives.PlayerNative;
 
 namespace Omp.Net.Entities.TextDraw;
 
@@ -25,6 +25,7 @@ public partial class PlayerTextDraw
 			Player_SetTextDrawPosition(Player.Id, Id, value.X, value.Y);
 		}
 	}
+
 	public override int Alignment
 	{
 		get => Player_GetTextDrawAlignment(Player.Id, Id); set
@@ -32,6 +33,7 @@ public partial class PlayerTextDraw
 			Player_SetTextDrawAlignment(Player.Id, Id, value);
 		}
 	}
+
 	public override Color Color
 	{
 		get => Color.FromArgb((int)Player_GetTextDrawColor(Player.Id, Id)); set
@@ -39,6 +41,7 @@ public partial class PlayerTextDraw
 			Player_SetTextDrawColor(Player.Id, Id, (uint)value.ToArgb());
 		}
 	}
+
 	public override Color BoxColor
 	{
 		get => Color.FromArgb((int)Player_GetTextDrawBoxColor(Player.Id, Id)); set
@@ -46,6 +49,7 @@ public partial class PlayerTextDraw
 			Player_SetTextDrawBoxColor(Player.Id, Id, (uint)value.ToArgb());
 		}
 	}
+
 	public override Color BackgroundColor
 	{
 		get => Color.FromArgb((int)Player_GetTextDrawBackgroundColor(Player.Id, Id)); set
@@ -53,6 +57,7 @@ public partial class PlayerTextDraw
 			Player_SetTextDrawBackgroundColor(Player.Id, Id, (uint)value.ToArgb());
 		}
 	}
+
 	public override TextDrawStyle Style
 	{
 		get => (TextDrawStyle)Player_GetTextDrawStyle(Player.Id, Id); set
@@ -60,6 +65,7 @@ public partial class PlayerTextDraw
 			Player_SetTextDrawStyle(Player.Id, Id, (int)value);
 		}
 	}
+
 	public override Vector2 LetterSize
 	{
 		get
@@ -76,6 +82,7 @@ public partial class PlayerTextDraw
 			Player_SetTextDrawLetterSize(Player.Id, Id, value.X, value.Y);
 		}
 	}
+
 	public override int Outline
 	{
 		get => Player_GetTextDrawOutline(Player.Id, Id); set
@@ -83,6 +90,7 @@ public partial class PlayerTextDraw
 			Player_SetTextDrawOutline(Player.Id, Id, value);
 		}
 	}
+
 	public override int PreviewModel
 	{
 		get => Player_GetTextDrawPreviewModel(Player.Id, Id); set
@@ -90,6 +98,7 @@ public partial class PlayerTextDraw
 			Player_SetTextDrawPreviewModel(Player.Id, Id, value);
 		}
 	}
+
 	public override Vector3 PreviewRotation
 	{
 		get
@@ -106,6 +115,7 @@ public partial class PlayerTextDraw
 			Player_SetTextDrawPreviewRotation(Player.Id, Id, value.X, value.Y, value.Z);
 		}
 	}
+
 	public override float PreviewZoom
 	{
 		get => Player_GetTextDrawPreviewZoom(Player.Id, Id); set
@@ -113,6 +123,7 @@ public partial class PlayerTextDraw
 			Player_SetTextDrawPreviewZoom(Player.Id, Id, value);
 		}
 	}
+
 	public override int PreviewVehiclePrimaryColor
 	{
 		get => Player_GetTextDrawPreviewVehiclePrimaryColor(Player.Id, Id); set
@@ -120,6 +131,7 @@ public partial class PlayerTextDraw
 			Player_SetTextDrawPreviewVehiclePrimaryColor(Player.Id, Id, value);
 		}
 	}
+
 	public override int PreviewVehicleSecondaryColor
 	{
 		get => Player_GetTextDrawPreviewVehicleSecondaryColor(Player.Id, Id); set
@@ -127,6 +139,7 @@ public partial class PlayerTextDraw
 			Player_SetTextDrawPreviewVehicleSecondaryColor(Player.Id, Id, value);
 		}
 	}
+
 	public override bool IsSelectable
 	{
 		get => Player_IsTextDrawSelectable(Player.Id, Id); set
@@ -134,6 +147,7 @@ public partial class PlayerTextDraw
 			Player_SetTextDrawSelectable(Player.Id, Id, value);
 		}
 	}
+
 	public override int Shadow
 	{
 		get => Player_GetTextDrawShadow(Player.Id, Id); set
@@ -141,6 +155,7 @@ public partial class PlayerTextDraw
 			Player_SetTextDrawShadow(Player.Id, Id, value);
 		}
 	}
+
 	public override bool IsProportional
 	{
 		get => throw new NotImplementedException(); set
@@ -148,6 +163,7 @@ public partial class PlayerTextDraw
 			Player_SetTextDrawProportional(Player.Id, Id, value);
 		}
 	}
+
 	public override string Text
 	{
 		get
@@ -163,6 +179,7 @@ public partial class PlayerTextDraw
 			Player_SetTextDrawText(Player.Id, Id, value);
 		}
 	}
+
 	public override Vector2 TextSize
 	{
 		get
@@ -179,6 +196,7 @@ public partial class PlayerTextDraw
 			Player_SetTextDrawTextSize(Player.Id, Id, value.X, value.Y);
 		}
 	}
+
 	public override bool UseBox
 	{
 		get => Player_TextDrawHasBox(Player.Id, Id); set

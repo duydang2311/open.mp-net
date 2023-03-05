@@ -11,7 +11,7 @@ public partial class PlayerTextDraw : BaseTextDraw, IPlayerTextDraw
 
 	public PlayerTextDraw(IPlayer player, Vector2 position, string text) : this(player, CreatePlayerTextDrawInternal(player.Id, position, text)) { }
 
-	public PlayerTextDraw(IPlayer player, int id) : base(id)
+	private PlayerTextDraw(IPlayer player, int id) : base(id)
 	{
 		Player = player;
 	}
