@@ -21,7 +21,7 @@ internal static partial class PlayerNative
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
 	public unsafe static extern bool Player_GetFacingAngle(int playerid, float* angle);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
-	public static extern bool Player_IsStreamedIn(int playerid, int forplayerid);
+	public static extern bool Player_IsStreamedInFor(int playerid, int forplayerid);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
 	public static extern bool Player_SetInterior(int playerid, uint interiorid);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
@@ -57,7 +57,7 @@ internal static partial class PlayerNative
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
 	public static extern bool Player_SetDrunkLevel(int playerid, int level);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
-	public static extern bool Player_SetColor(int playerid, byte r, byte g, byte b, byte a);
+	public static extern bool Player_SetColor(int playerid, uint argb);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
 	public static extern uint Player_GetColour(int playerid);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
@@ -289,7 +289,7 @@ internal static partial class PlayerNative
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
 	public static extern bool Player_ShowNameTagFor(int playerid, int showplayerid, bool show);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
-	public static extern bool Player_SetMapIcon(int playerid, int iconid, float x, float y, float z, int markertype, uint color, int style = (int)MapIconStyle.Local);
+	public static extern bool Player_SetMapIcon(int playerid, int iconid, float x, float y, float z, int markertype, uint argb, int style = (int)MapIconStyle.Local);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
 	public static extern bool Player_RemoveMapIcon(int playerid, int iconid);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
@@ -341,7 +341,7 @@ internal static partial class PlayerNative
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
 	public static extern int Player_GetVirtualWorld(int playerid);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
-	public static extern bool Player_EnableStuntBonusFor(int playerid, bool enable);
+	public static extern bool Player_EnableStuntBonus(int playerid, bool enable);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
 	public static extern bool Player_ToggleSpectating(int playerid, bool toggle);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
