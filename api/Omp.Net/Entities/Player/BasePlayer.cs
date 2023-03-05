@@ -452,12 +452,12 @@ public partial class BasePlayer : IPlayer
 
 	public IPlayerTextDraw CreateTextDraw(Vector2 position, string text)
 	{
-		return Core.GetTextDrawFactory().Create(this, position, text);
+		return Core.Instance.GetTextDrawFactory().Create(this, position, text);
 	}
 
 	public IPlayerTextDraw CreateTextDraw(Vector2 position, int model)
 	{
-		return Core.GetTextDrawFactory().Create(this, position, model);
+		return Core.Instance.GetTextDrawFactory().Create(this, position, model);
 	}
 
 	public bool SetChatBubble(string text, int color, float drawDistance, int expireTime)
