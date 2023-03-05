@@ -8,7 +8,7 @@ public readonly record struct KeysData
 	public readonly GameKey LeftRight { get; init; }
 	public readonly GameKey UpDown { get; init; }
 
-	public KeysData(GameKey key, GameKey leftRight, GameKey upDown)
+	public KeysData(GameKey key, GameKey upDown, GameKey leftRight)
 	{
 		Key = key;
 		LeftRight = leftRight;
@@ -17,6 +17,6 @@ public readonly record struct KeysData
 
 	public override readonly string ToString()
 	{
-		return $"({Key}, {LeftRight}, {UpDown})";
+		return $"({Key}, {UpDown}, {LeftRight})";
 	}
 }
