@@ -58,7 +58,7 @@ public interface IPlayer
 	bool IsInRaceCheckpoint { get; }
 
 	bool GetWeaponData(int slot, out WeaponData data);
-	bool SetSpawnInfo(int team, int skin, Vector3 position, float rotation, int weapon1 = 0, int weapon1_ammo = 0, int weapon2 = 0, int weapon2_ammo = 0, int weapon3 = 0, int weapon3_ammo = 0);
+	bool SetSpawnInfo(int team, int skin, Vector3 position, float rotation, int weapon1 = 0, int ammo1 = 0, int weapon2 = 0, int ammo2 = 0, int weapon3 = 0, int ammo3 = 0);
 	bool Spawn();
 	bool SetPosition(Vector3 position);
 	bool SetPositionFindZ(Vector3 position);
@@ -103,9 +103,9 @@ public interface IPlayer
 	bool RemoveFromVehicle(bool force);
 	bool ToggleControllable(bool toggle);
 	bool PlaySound(uint soundId, Vector3 position);
-	bool ApplyAnimation(string anim_lib, string anim_name, float delta, bool loop, bool lock_x, bool lock_y, bool freeze, int time, int sync_type = (int)PlayerAnimationSyncType.NoSync);
-	bool ClearAnimations(int sync_type = (int)PlayerAnimationSyncType.NoSync);
-	bool SetSpecialAction(int actionid);
+	bool ApplyAnimation(string animLibrary, string animName, float delta, bool loop, bool lockX, bool lockY, bool freeze, int time, PlayerAnimationSyncType syncType = PlayerAnimationSyncType.NoSync);
+	bool ClearAnimations(PlayerAnimationSyncType syncType = PlayerAnimationSyncType.NoSync);
+	bool SetSpecialAction(PlayerSpecialAction action);
 	bool DisableRemoteVehicleCollisions(bool collide);
 	bool SetCheckpoint(Vector3 position, float radius);
 	bool DisableCheckpoint();
@@ -114,21 +114,21 @@ public interface IPlayer
 	bool SetWorldBounds(float x_max, float x_min, float y_max, float y_min);
 	bool SetMarkerFor(IPlayer other, int color);
 	bool ShowNameTagFor(IPlayer other, bool show);
-	bool SetMapIcon(int iconId, Vector3 position, int markertype, uint color, int style = (int)MapIconStyle.Local);
+	bool SetMapIcon(int iconId, Vector3 position, int markertype, Color color, MapIconStyle style = MapIconStyle.Local);
 	bool RemoveMapIcon(int iconId);
 	bool AllowTeleport(bool allow);
 	bool SetCameraPos(Vector3 position);
-	bool SetCameraLookAt(Vector3 position, int cut_type = (int)PlayerCameraCutType.Cut);
+	bool SetCameraLookAt(Vector3 position, PlayerCameraCutType cut_type = PlayerCameraCutType.Cut);
 	bool SetCameraBehind();
 	bool EnableCameraTarget(bool enable);
 	bool AttachCameraToObject(int objectId);
-	bool InterpolateCameraPos(Vector3 fromPosition, Vector3 toPosition, int time, int cut_type = (int)PlayerCameraCutType.Cut);
-	bool InterpolateCameraLookAt(Vector3 fromPosition, Vector3 toPosition, int time, int cut_type = (int)PlayerCameraCutType.Cut);
+	bool InterpolateCameraPos(Vector3 fromPosition, Vector3 toPosition, int time, PlayerCameraCutType cut_type = PlayerCameraCutType.Cut);
+	bool InterpolateCameraLookAt(Vector3 fromPosition, Vector3 toPosition, int time, PlayerCameraCutType cut_type = PlayerCameraCutType.Cut);
 	bool SetVirtualWorld(int worldId);
-	bool EnableStuntBonusFor(bool enable);
+	bool EnableStuntBonus(bool enable);
 	bool ToggleSpectating(bool toggle);
-	bool Spectate(IPlayer target, int mode = (int)PlayerSpectateMode.Normal);
-	bool Spectate(int targetvehicleid, int mode = (int)PlayerSpectateMode.Normal);
+	bool Spectate(IPlayer target, PlayerSpectateMode mode = PlayerSpectateMode.Normal);
+	bool Spectate(int targetvehicleid, PlayerSpectateMode mode = PlayerSpectateMode.Normal);
 	bool CreateExplosion(Vector3 position, int type, float radius);
 	bool IsInVehicle(int vehicleid);
 }

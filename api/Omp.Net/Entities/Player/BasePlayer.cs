@@ -60,91 +60,189 @@ public partial class BasePlayer : IPlayer
 		}
 	}
 
-	public int Interior => throw new NotImplementedException();
+	public int Interior => (int)Player_GetInterior(Id);
 
-	public float Health => throw new NotImplementedException();
+	public float Health
+	{
+		get
+		{
+			unsafe
+			{
+				float health;
+				Player_GetHealth(Id, &health);
+				return health;
+			}
+		}
+	}
 
-	public float Armour => throw new NotImplementedException();
+	public float Armour
+	{
+		get
+		{
+			unsafe
+			{
+				float armour;
+				Player_GetArmour(Id, &armour);
+				return armour;
+			}
+		}
+	}
 
-	public int Ammo => throw new NotImplementedException();
+	public int Ammo => Player_GetAmmo(Id);
 
-	public PlayerWeaponState WeaponState => throw new NotImplementedException();
+	public PlayerWeaponState WeaponState => (PlayerWeaponState)Player_GetWeaponState(Id);
 
 	public IPlayer TargetPlayer => throw new NotImplementedException();
 
-	public int TargetActor => throw new NotImplementedException();
+	public int TargetActor => Player_GetTargetActor(Id);
 
-	public int Team => throw new NotImplementedException();
+	public int Team => Player_GetTeam(Id);
 
-	public int Score => throw new NotImplementedException();
+	public int Score => Player_GetScore(Id);
 
-	public int DrunkLevel => throw new NotImplementedException();
+	public int DrunkLevel => Player_GetDrunkLevel(Id);
 
-	public Color Colour => throw new NotImplementedException();
+	public Color Colour => Color.FromArgb((int)Player_GetColour(Id));
 
-	public int Skin => throw new NotImplementedException();
+	public int Skin => Player_GetSkin(Id);
 
-	public int Money => throw new NotImplementedException();
+	public int Money => Player_GetMoney(Id);
 
-	public PlayerState State => throw new NotImplementedException();
+	public PlayerState State => (PlayerState)Player_GetState(Id);
 
-	public string Ip => throw new NotImplementedException();
+	public string Ip
+	{
+		get
+		{
+			var ptr = Marshal.AllocHGlobal(GameConstants.MaxIpv4Length);
+			Player_GetIp(Id, ptr, GameConstants.MaxIpv4Length);
+			var ip = Marshal.PtrToStringAnsi(ptr);
+			Marshal.FreeHGlobal(ptr);
+			return ip!;
+		}
+	}
 
-	public uint Ping => throw new NotImplementedException();
+	public uint Ping => Player_GetPing(Id);
 
-	public PlayerWeapon ArmedWeapon => throw new NotImplementedException();
+	public PlayerWeapon ArmedWeapon => (PlayerWeapon)Player_GetArmedWeapon(Id);
 
-	public uint WantedLevel => throw new NotImplementedException();
+	public uint WantedLevel => Player_GetWantedLevel(Id);
 
-	public int FightingStyle => throw new NotImplementedException();
+	public int FightingStyle => Player_GetFightingStyle(Id);
 
-	public Vector3 Velocity => throw new NotImplementedException();
+	public Vector3 Velocity
+	{
+		get
+		{
+			unsafe
+			{
+				float x, y, z;
+				Player_GetVelocity(Id, &x, &y, &z);
+				return new Vector3(x, y, z);
+			}
+		}
+	}
 
-	public int SurfingVehicleID => throw new NotImplementedException();
+	public int SurfingVehicleID => Player_GetSurfingVehicleID(Id);
 
-	public int SurfingObjectID => throw new NotImplementedException();
+	public int SurfingObjectID => Player_GetSurfingObjectID(Id);
 
-	public int VehicleID => throw new NotImplementedException();
+	public int VehicleID => Player_GetVehicleID(Id);
 
-	public int VehicleSeat => throw new NotImplementedException();
+	public int VehicleSeat => Player_GetVehicleSeat(Id);
 
-	public uint AnimationIndex => throw new NotImplementedException();
+	public uint AnimationIndex => Player_GetAnimationIndex(Id);
 
-	public PlayerSpecialAction SpecialAction => throw new NotImplementedException();
+	public PlayerSpecialAction SpecialAction => (PlayerSpecialAction)Player_GetSpecialAction(Id);
 
-	public Vector3 CameraPos => throw new NotImplementedException();
+	public Vector3 CameraPos
+	{
+		get
+		{
+			unsafe
+			{
+				float x, y, z;
+				Player_GetCameraPos(Id, &x, &y, &z);
+				return new Vector3(x, y, z);
+			}
+		}
+	}
 
-	public Vector3 FrontVector => throw new NotImplementedException();
+	public Vector3 FrontVector
+	{
+		get
+		{
+			unsafe
+			{
+				float x, y, z;
+				Player_GetCameraFrontVector(Id, &x, &y, &z);
+				return new Vector3(x, y, z);
+			}
+		}
+	}
 
-	public byte CameraMode => throw new NotImplementedException();
+	public byte CameraMode => Player_GetCameraMode(Id);
 
-	public int CameraTargetObject => throw new NotImplementedException();
+	public int CameraTargetObject => Player_GetCameraTargetObject(Id);
 
-	public int CameraTargetVehicle => throw new NotImplementedException();
+	public int CameraTargetVehicle => Player_GetCameraTargetVehicle(Id);
 
-	public int CameraTargetPlayer => throw new NotImplementedException();
+	public int CameraTargetPlayer => Player_GetCameraTargetPlayer(Id);
 
-	public int CameraTargetActor => throw new NotImplementedException();
+	public int CameraTargetActor => Player_GetCameraTargetActor(Id);
 
-	public float CameraAspectRatio => throw new NotImplementedException();
+	public float CameraAspectRatio => Player_GetCameraAspectRatio(Id);
 
-	public float CameraZoom => throw new NotImplementedException();
+	public float CameraZoom => Player_GetCameraZoom(Id);
 
-	public int VirtualWorld => throw new NotImplementedException();
+	public int VirtualWorld => Player_GetVirtualWorld(Id);
 
-	public KeysData Keys => throw new NotImplementedException();
+	public KeysData Keys
+	{
+		get
+		{
+			unsafe
+			{
+				int keys, updown, leftright;
+				Player_GetKeys(Id, &keys, &updown, &leftright);
+				return new KeysData((GameKey)keys, (GameKey)updown, (GameKey)leftright);
+			}
+		}
+	}
 
-	public TimeData Time => throw new NotImplementedException();
+	public TimeData Time
+	{
+		get
+		{
+			unsafe
+			{
+				int hour, minute;
+				Player_GetTime(Id, &hour, &minute);
+				return new TimeData(hour, minute);
+			}
+		}
+	}
 
-	public ShotVectorsData LastShotVectors => throw new NotImplementedException();
+	public ShotVectorsData LastShotVectors
+	{
+		get
+		{
+			unsafe
+			{
+				float originX, originY, originZ, hitX, hitY, hitZ;
+				Player_GetLastShotVectors(Id, &originX, &originY, &originZ, &hitX, &hitY, &hitZ);
+				return new ShotVectorsData(originX, originY, originZ, hitX, hitY, hitZ);
+			}
+		}
+	}
 
-	public bool Connected => throw new NotImplementedException();
+	public bool Connected => Player_IsConnected(Id);
 
-	public bool IsInAnyVehicle => throw new NotImplementedException();
+	public bool IsInAnyVehicle => Player_IsInAnyVehicle(Id);
 
-	public bool IsInCheckpoint => throw new NotImplementedException();
+	public bool IsInCheckpoint => Player_IsInCheckpoint(Id);
 
-	public bool IsInRaceCheckpoint => throw new NotImplementedException();
+	public bool IsInRaceCheckpoint => Player_IsInRaceCheckpoint(Id);
 
 	public int SetName(string name)
 	{
@@ -176,353 +274,354 @@ public partial class BasePlayer : IPlayer
 		throw new NotImplementedException();
 	}
 
-	public bool SetSpawnInfo(int team, int skin, Vector3 position, float rotation, int weapon1 = 0, int weapon1_ammo = 0, int weapon2 = 0, int weapon2_ammo = 0, int weapon3 = 0, int weapon3_ammo = 0)
+	public bool SetSpawnInfo(int team, int skin, Vector3 position, float rotation, int weapon1 = 0, int ammo1 = 0, int weapon2 = 0, int ammo2 = 0, int weapon3 = 0, int ammo3 = 0)
 	{
-		return Player_SetSpawnInfo(id, team, skin, position.X, position.Y, position.Z, rotation, weapon1, weapon1_ammo, weapon2, weapon2_ammo, weapon3, weapon3_ammo);
+		return Player_SetSpawnInfo(id, team, skin, position.X, position.Y, position.Z, rotation, weapon1, ammo1, weapon2, ammo2, weapon3, ammo3);
 	}
 
 	public bool SetPosition(Vector3 position)
 	{
-		throw new NotImplementedException();
+		return Player_SetPosition(Id, position.X, position.Y, position.Z);
 	}
 
 	public bool SetPositionFindZ(Vector3 position)
 	{
-		throw new NotImplementedException();
+		return Player_SetPositionFindZ(Id, position.X, position.Y, position.Z);
 	}
 
 	public bool IsStreamedInFor(IPlayer other)
 	{
-		throw new NotImplementedException();
+		return Player_IsStreamedInFor(Id, other.Id);
 	}
 
 	public bool SetInterior(uint interiorId)
 	{
-		throw new NotImplementedException();
+		return Player_SetInterior(Id, interiorId);
 	}
 
 	public bool SetHealth(float health)
 	{
-		throw new NotImplementedException();
+		return Player_SetHealth(Id, health);
 	}
 
 	public bool SetArmour(float armour)
 	{
-		throw new NotImplementedException();
+		return Player_SetArmour(Id, armour);
 	}
 
 	public bool SetAmmo(PlayerWeapon weapon, int ammo)
 	{
-		throw new NotImplementedException();
+		return Player_SetAmmo(Id, (int)weapon, ammo);
 	}
 
 	public bool SetTeam(int teamId)
 	{
-		throw new NotImplementedException();
+		return Player_SetTeam(Id, teamId);
 	}
 
 	public bool SetScore(int score)
 	{
-		throw new NotImplementedException();
+		return Player_SetScore(Id, score);
 	}
 
 	public bool SetDrunkLevel(int level)
 	{
-		throw new NotImplementedException();
+		return Player_SetDrunkLevel(Id, level);
 	}
 
 	public bool SetColor(Color color)
 	{
-		throw new NotImplementedException();
+		return Player_SetColor(Id, (uint)color.ToArgb());
 	}
 
 	public bool SetSkin(int skinid)
 	{
-		throw new NotImplementedException();
+		return Player_SetSkin(Id, skinid);
 	}
 
 	public bool GiveWeapon(PlayerWeapon weapon, int ammo)
 	{
-		throw new NotImplementedException();
+		return Player_GiveWeapon(Id, (int)weapon, ammo);
 	}
 
 	public bool ResetWeapons()
 	{
-		throw new NotImplementedException();
+		return Player_ResetWeapons(Id);
 	}
 
 	public bool SetArmedWeapon(PlayerWeapon weapon)
 	{
-		throw new NotImplementedException();
+		return Player_SetArmedWeapon(Id, (uint)weapon);
 	}
 
 	public bool GiveMoney(int money)
 	{
-		throw new NotImplementedException();
+		return Player_GiveMoney(Id, money);
 	}
 
 	public bool ResetMoney()
 	{
-		throw new NotImplementedException();
+		return Player_ResetMoney(Id);
 	}
 
 	public bool SetTime(TimeData data)
 	{
-		throw new NotImplementedException();
+		return Player_SetTime(Id, data.Hour, data.Minute);
 	}
 
 	public bool ToggleClock(bool toggle)
 	{
-		throw new NotImplementedException();
+		return Player_ToggleClock(Id, toggle);
 	}
 
 	public bool SetWeather(int weather)
 	{
-		throw new NotImplementedException();
+		return Player_SetWeather(Id, weather);
 	}
 
 	public bool ForceClassSelection()
 	{
-		throw new NotImplementedException();
+		return Player_ForceClassSelection(Id);
 	}
 
 	public bool SetWantedLevel(uint level)
 	{
-		throw new NotImplementedException();
+		return Player_SetWantedLevel(Id, level);
 	}
 
 	public bool SetFightingStyle(int style)
 	{
-		throw new NotImplementedException();
+		return Player_SetFightingStyle(Id, style);
 	}
 
 	public bool SetVelocity(Vector3 velocity)
 	{
-		throw new NotImplementedException();
+		return Player_SetVelocity(Id, velocity.X, velocity.Y, velocity.Z);
 	}
 
 	public bool PlayCrimeReport(IPlayer suspect, int crime)
 	{
-		throw new NotImplementedException();
+		return Player_PlayCrimeReport(Id, suspect.Id, crime);
 	}
 
 	public bool PlayAudioStream(string url, Vector3 position, float radius = 50, bool usepos = false)
 	{
-		throw new NotImplementedException();
+		return Player_PlayAudioStream(Id, url, position.X, position.Y, position.Z, radius, usepos);
 	}
 
 	public bool StopAudioStream()
 	{
-		throw new NotImplementedException();
+		return Player_StopAudioStream(Id);
 	}
 
 	public bool SetShopName(string shopname)
 	{
-		throw new NotImplementedException();
+		return Player_SetShopName(Id, shopname);
 	}
 
 	public bool SetSkillLevel(PlayerWeaponSkill skill, int level)
 	{
-		throw new NotImplementedException();
+		return Player_SetSkillLevel(Id, (int)skill, level);
 	}
 
 	public bool RemoveBuilding(int modelid, Vector3 position, float radius)
 	{
-		throw new NotImplementedException();
+		return Player_RemoveBuilding(Id, modelid, position.X, position.Y, position.Z, radius);
 	}
 
 	public bool SetAttachedObject(int index, int modelid, int bone, Vector3 offset, Vector3 rotation = default, Vector3? scale = null, Color materialColor1 = default, Color materialColor2 = default)
 	{
-		throw new NotImplementedException();
+		scale ??= Vector3.One;
+		return Player_SetAttachedObject(Id, index, modelid, bone, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, scale.Value.X, scale.Value.Y, scale.Value.Z, materialColor1.ToArgb(), materialColor2.ToArgb());
 	}
 
 	public bool RemoveAttachedObject(int index)
 	{
-		throw new NotImplementedException();
+		return Player_RemoveAttachedObject(Id, index);
 	}
 
 	public bool IsAttachedObjectSlotUsed(int index)
 	{
-		throw new NotImplementedException();
+		return Player_IsAttachedObjectSlotUsed(Id, index);
 	}
 
 	public bool EditAttachedObject(int index)
 	{
-		throw new NotImplementedException();
+		return Player_EditAttachedObject(Id, index);
 	}
 
 	public IPlayerTextDraw CreateTextDraw(Vector2 position, string text)
 	{
-		throw new NotImplementedException();
+		return Core.GetTextDrawFactory().Create(this, position, text);
 	}
 
 	public IPlayerTextDraw CreateTextDraw(Vector2 position, int model)
 	{
-		throw new NotImplementedException();
+		return Core.GetTextDrawFactory().Create(this, position, model);
 	}
 
 	public bool SetChatBubble(string text, int color, float drawDistance, int expireTime)
 	{
-		throw new NotImplementedException();
+		return Player_SetChatBubble(Id, text, color, drawDistance, expireTime);
 	}
 
 	public bool PutInVehicle(int vehicleId, int seatId)
 	{
-		throw new NotImplementedException();
+		return Player_PutInVehicle(Id, vehicleId, seatId);
 	}
 
 	public bool RemoveFromVehicle(bool force)
 	{
-		throw new NotImplementedException();
+		return Player_RemoveFromVehicle(Id, force);
 	}
 
 	public bool ToggleControllable(bool toggle)
 	{
-		throw new NotImplementedException();
+		return Player_ToggleControllable(Id, toggle);
 	}
 
 	public bool PlaySound(uint soundId, Vector3 position)
 	{
-		throw new NotImplementedException();
+		return Player_PlaySound(Id, soundId, position.X, position.Y, position.Z);
 	}
 
-	public bool ApplyAnimation(string anim_lib, string anim_name, float delta, bool loop, bool lock_x, bool lock_y, bool freeze, int time, int sync_type = 0)
+	public bool ApplyAnimation(string animLibrary, string animName, float delta, bool loop, bool lockX, bool lockY, bool freeze, int time, PlayerAnimationSyncType syncType = PlayerAnimationSyncType.NoSync)
 	{
-		throw new NotImplementedException();
+		return Player_ApplyAnimation(Id, animLibrary, animName, delta, loop, lockX, lockY, freeze, time, (int)syncType);
 	}
 
-	public bool ClearAnimations(int sync_type = 0)
+	public bool ClearAnimations(PlayerAnimationSyncType syncType = PlayerAnimationSyncType.NoSync)
 	{
-		throw new NotImplementedException();
+		return Player_ClearAnimations(Id, (int)syncType);
 	}
 
-	public bool SetSpecialAction(int actionid)
+	public bool SetSpecialAction(PlayerSpecialAction action)
 	{
-		throw new NotImplementedException();
+		return Player_SetSpecialAction(Id, (int)action);
 	}
 
 	public bool DisableRemoteVehicleCollisions(bool collide)
 	{
-		throw new NotImplementedException();
+		return Player_DisableRemoteVehicleCollisions(Id, collide);
 	}
 
 	public bool SetCheckpoint(Vector3 position, float radius)
 	{
-		throw new NotImplementedException();
+		return Player_SetCheckpoint(Id, position.X, position.Y, position.Z, radius);
 	}
 
 	public bool DisableCheckpoint()
 	{
-		throw new NotImplementedException();
+		return Player_DisableCheckpoint(Id);
 	}
 
 	public bool SetRaceCheckpoint(int type, Vector3 position, Vector3 nextPosition, float radius)
 	{
-		throw new NotImplementedException();
+		return Player_SetRaceCheckpoint(Id, type, position.X, position.Y, position.Z, nextPosition.X, nextPosition.Y, nextPosition.Z, radius);
 	}
 
 	public bool DisableRaceCheckpoint()
 	{
-		throw new NotImplementedException();
+		return Player_DisableRaceCheckpoint(Id);
 	}
 
-	public bool SetWorldBounds(float x_max, float x_min, float y_max, float y_min)
+	public bool SetWorldBounds(float maxX, float minX, float maxY, float minY)
 	{
-		throw new NotImplementedException();
+		return Player_SetWorldBounds(Id, maxX, minX, maxY, minY);
 	}
 
 	public bool SetMarkerFor(IPlayer other, int color)
 	{
-		throw new NotImplementedException();
+		return PLayer_SetMarkerFor(Id, other.Id, color);
 	}
 
 	public bool ShowNameTagFor(IPlayer other, bool show)
 	{
-		throw new NotImplementedException();
+		return Player_ShowNameTagFor(Id, other.Id, show);
 	}
 
-	public bool SetMapIcon(int iconId, Vector3 position, int markertype, uint color, int style = 0)
+	public bool SetMapIcon(int iconId, Vector3 position, int markertype, Color color, MapIconStyle style = MapIconStyle.Local)
 	{
-		throw new NotImplementedException();
+		return Player_SetMapIcon(Id, iconId, position.X, position.Y, position.Z, markertype, (uint)color.ToArgb(), (int)style);
 	}
 
 	public bool RemoveMapIcon(int iconId)
 	{
-		throw new NotImplementedException();
+		return Player_RemoveMapIcon(Id, iconId);
 	}
 
 	public bool AllowTeleport(bool allow)
 	{
-		throw new NotImplementedException();
+		return Player_AllowTeleport(Id, allow);
 	}
 
 	public bool SetCameraPos(Vector3 position)
 	{
-		throw new NotImplementedException();
+		return Player_SetCameraPos(Id, position.X, position.Y, position.Z);
 	}
 
-	public bool SetCameraLookAt(Vector3 position, int cut_type = 0)
+	public bool SetCameraLookAt(Vector3 position, PlayerCameraCutType cutType = PlayerCameraCutType.Cut)
 	{
-		throw new NotImplementedException();
+		return Player_SetCameraLookAt(Id, position.X, position.Y, position.Z, (int)cutType);
 	}
 
 	public bool SetCameraBehind()
 	{
-		throw new NotImplementedException();
+		return Player_SetCameraBehind(Id);
 	}
 
 	public bool EnableCameraTarget(bool enable)
 	{
-		throw new NotImplementedException();
+		return Player_EnableCameraTarget(Id, enable);
 	}
 
 	public bool AttachCameraToObject(int objectId)
 	{
-		throw new NotImplementedException();
+		return Player_AttachCameraToObject(Id, objectId);
 	}
 
-	public bool InterpolateCameraPos(Vector3 fromPosition, Vector3 toPosition, int time, int cut_type = 0)
+	public bool InterpolateCameraPos(Vector3 fromPosition, Vector3 toPosition, int time, PlayerCameraCutType cutType = PlayerCameraCutType.Cut)
 	{
-		throw new NotImplementedException();
+		return Player_InterpolateCameraPos(Id, fromPosition.X, fromPosition.Y, fromPosition.Z, toPosition.X, toPosition.Y, toPosition.Z, time, (int)cutType);
 	}
 
-	public bool InterpolateCameraLookAt(Vector3 fromPosition, Vector3 toPosition, int time, int cut_type = 0)
+	public bool InterpolateCameraLookAt(Vector3 fromPosition, Vector3 toPosition, int time, PlayerCameraCutType cutType = PlayerCameraCutType.Cut)
 	{
-		throw new NotImplementedException();
+		return Player_InterpolateCameraLookAt(Id, fromPosition.X, fromPosition.Y, fromPosition.Z, toPosition.X, toPosition.Y, toPosition.Z, time, (int)cutType);
 	}
 
 	public bool SetVirtualWorld(int worldId)
 	{
-		throw new NotImplementedException();
+		return Player_SetVirtualWorld(Id, worldId);
 	}
 
-	public bool EnableStuntBonusFor(bool enable)
+	public bool EnableStuntBonus(bool enable)
 	{
-		throw new NotImplementedException();
+		return Player_EnableStuntBonus(Id, enable);
 	}
 
 	public bool ToggleSpectating(bool toggle)
 	{
-		throw new NotImplementedException();
+		return Player_ToggleSpectating(Id, toggle);
 	}
 
-	public bool Spectate(IPlayer target, int mode = 1)
+	public bool Spectate(IPlayer target, PlayerSpectateMode mode = PlayerSpectateMode.Normal)
 	{
-		throw new NotImplementedException();
+		return Player_SpectatePlayer(Id, target.Id, (int)mode);
 	}
 
-	public bool Spectate(int targetvehicleid, int mode = 1)
+	public bool Spectate(int targetvehicleid, PlayerSpectateMode mode = PlayerSpectateMode.Normal)
 	{
-		throw new NotImplementedException();
+		return Player_SpectateVehicle(Id, targetvehicleid, (int)mode);
 	}
 
 	public bool CreateExplosion(Vector3 position, int type, float radius)
 	{
-		throw new NotImplementedException();
+		return Player_CreateExplosion(Id, position.X, position.Y, position.Z, type, radius);
 	}
 
 	public bool IsInVehicle(int vehicleid)
 	{
-		throw new NotImplementedException();
+		return Player_IsInVehicle(Id, vehicleid);
 	}
 }
