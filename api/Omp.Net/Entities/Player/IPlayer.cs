@@ -10,6 +10,8 @@ public interface IPlayer
 {
 	IntPtr NativeHandle { get; }
 	int Id { get; }
+	IEnumerable<IPlayerTextDraw> TextDraws { get; }
+
 	Vector3 Position { get; }
 	float FacingAngle { get; }
 	int Interior { get; }
