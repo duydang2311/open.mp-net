@@ -1,11 +1,9 @@
 namespace Omp.Net.Entities.Player;
 
-public class PlayerFactory : IPlayerFactory
+public class PlayerFactory : IEntityFactory<IPlayer>
 {
-	public PlayerFactory() { }
-
-	public IPlayer CreatePlayer(IntPtr nativeHandle, int id)
+	public IPlayer Create(int id)
 	{
-		return new BasePlayer(nativeHandle, id);
+		return new BasePlayer(IntPtr.Zero, id);
 	}
 }

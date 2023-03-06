@@ -12,9 +12,18 @@ public partial class BasePlayer : IPlayer
 {
 	private readonly int id;
 	private readonly IntPtr nativeHandle;
+	private ITextDrawPool? textDrawPool;
 
 	public IntPtr NativeHandle => nativeHandle;
 	public int Id => id;
+	public IEnumerable<IPlayerTextDraw> TextDraws
+	{
+		get
+		{
+			textDrawPool ??= new TextDrawPool();
+			return textDrawPool.GetAll().Cast<IPlayerTextDraw>();
+		}
+	}
 
 	public BasePlayer(IntPtr nativeHandle, int id)
 	{
@@ -452,12 +461,19 @@ public partial class BasePlayer : IPlayer
 
 	public IPlayerTextDraw CreateTextDraw(Vector2 position, string text)
 	{
-		return Core.Instance.GetTextDrawFactory().Create(this, position, text);
+		return Core.Instance.TextDrawFactory.Create(this, position, text);
 	}
 
 	public IPlayerTextDraw CreateTextDraw(Vector2 position, int model)
 	{
-		return Core.Instance.GetTextDrawFactory().Create(this, position, model);
+		return Core.Instance.TextDrawFactory.Create(this, position, model);
+	}
+
+	public bool DestroyTextDraw(IPlayerTextDraw textDraw)
+	{
+		var ret = Player_DestroyTextDraw(Id, textDraw.Id);
+		textDrawPool?.Remove(textDraw.Id);
+		return ret;
 	}
 
 	public bool SetChatBubble(string text, int color, float drawDistance, int expireTime)
