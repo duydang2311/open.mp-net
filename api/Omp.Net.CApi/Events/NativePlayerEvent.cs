@@ -1,13 +1,40 @@
+using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Omp.Net.Shared;
+using Omp.Net.Shared.Data;
+using Omp.Net.Shared.Enums;
 
 namespace Omp.Net.CApi.Events;
 
-public delegate void OnIncomingConnectionDelegate(UnmanagedEntityId player, string ipAddress, ushort port);
-public delegate void OnPlayerConnectDelegate(UnmanagedEntityId player);
-public delegate void OnPlayerDisconnectDelegate(UnmanagedEntityId player, int reason);
-public delegate void OnPlayerClientInitDelegate(UnmanagedEntityId player);
-public delegate int OnPlayerRequestSpawnDelegate(UnmanagedEntityId player);
-public delegate void OnPlayerSpawnDelegate(UnmanagedEntityId player);
+public delegate void OnIncomingConnectionDelegate(EntityId player, string ipAddress, ushort port);
+public delegate void OnPlayerConnectDelegate(EntityId player);
+public delegate void OnPlayerDisconnectDelegate(EntityId player, int reason);
+public delegate void OnPlayerClientInitDelegate(EntityId player);
+public delegate int OnPlayerRequestSpawnDelegate(EntityId player);
+public delegate void OnPlayerSpawnDelegate(EntityId player);
+public delegate void OnPlayerStreamInDelegate(EntityId player, EntityId forPlayer);
+public delegate void OnPlayerStreamOutDelegate(EntityId player, EntityId forPlayer);
+public delegate bool OnPlayerTextDelegate(EntityId player, string message);
+public delegate bool OnPlayerCommandTextDelegate(EntityId player, string message);
+public delegate bool OnPlayerShotMissedDelegate(EntityId player, PlayerBulletData bulletData);
+public delegate bool OnPlayerShotPlayerDelegate(EntityId player, EntityId target, PlayerBulletData bulletData);
+public delegate bool OnPlayerShotVehicleDelegate(EntityId player, EntityId target, PlayerBulletData bulletData);
+public delegate bool OnPlayerShotObjectDelegate(EntityId player, EntityId target, PlayerBulletData bulletData);
+public delegate bool OnPlayerShotPlayerObjectDelegate(EntityId player, EntityId target, PlayerBulletData bulletData);
+public delegate void OnPlayerScoreChangeDelegate(EntityId player, int score);
+public delegate void OnPlayerNameChangeDelegate(EntityId player, string oldName);
+public delegate void OnPlayerInteriorChangeDelegate(EntityId player, uint newInterior, uint oldInterior);
+public delegate void OnPlayerStateChangeDelegate(EntityId player, PlayerState newState, PlayerState oldState);
+public delegate void OnPlayerKeyStateChangeDelegate(EntityId player, uint newKeys, uint oldKeys);
+public delegate void OnPlayerDeathDelegate(EntityId player, EntityId killer, int reason);
+public delegate void OnPlayerTakeDamageDelegate(EntityId player, EntityId from, float amount, uint weapon, BodyPart part);
+public delegate void OnPlayerGiveDamageDelegate(EntityId player, EntityId to, float amount, uint weapon, BodyPart part);
+public delegate void OnPlayerClickMapDelegate(EntityId player, Vector3 pos);
+public delegate void OnPlayerClickPlayerDelegate(EntityId player, EntityId clicked, PlayerClickSource source);
+public delegate void OnClientCheckResponseDelegate(EntityId player, int actionType, int address, int results);
+public delegate bool OnPlayerUpdateDelegate(EntityId player, long now);
+
 
 internal static partial class NativePlayerEvent
 {
@@ -17,33 +44,54 @@ internal static partial class NativePlayerEvent
 	public static event OnPlayerClientInitDelegate? NativeOnPlayerClientInit;
 	public static event OnPlayerRequestSpawnDelegate? NativeOnPlayerRequestSpawn;
 	public static event OnPlayerSpawnDelegate? NativeOnPlayerSpawn;
+	public static event OnPlayerStreamInDelegate? NativeOnPlayerStreamIn;
+	public static event OnPlayerStreamOutDelegate? NativeOnPlayerStreamOut;
+	public static event OnPlayerTextDelegate? NativeOnPlayerText;
+	public static event OnPlayerCommandTextDelegate? NativeOnPlayerCommandText;
+	public static event OnPlayerShotMissedDelegate? NativeOnPlayerShotMissed;
+	public static event OnPlayerShotPlayerDelegate? NativeOnPlayerShotPlayer;
+	public static event OnPlayerShotVehicleDelegate? NativeOnPlayerShotVehicle;
+	public static event OnPlayerShotObjectDelegate? NativeOnPlayerShotObject;
+	public static event OnPlayerShotPlayerObjectDelegate? NativeOnPlayerShotPlayerObject;
+	public static event OnPlayerScoreChangeDelegate? NativeOnPlayerScoreChange;
+	public static event OnPlayerNameChangeDelegate? NativeOnPlayerNameChange;
+	public static event OnPlayerInteriorChangeDelegate? NativeOnPlayerInteriorChange;
+	public static event OnPlayerStateChangeDelegate? NativeOnPlayerStateChange;
+	public static event OnPlayerKeyStateChangeDelegate? NativeOnPlayerKeyStateChange;
+	public static event OnPlayerDeathDelegate? NativeOnPlayerDeath;
+	public static event OnPlayerTakeDamageDelegate? NativeOnPlayerTakeDamage;
+	public static event OnPlayerGiveDamageDelegate? NativeOnPlayerGiveDamage;
+	public static event OnPlayerClickMapDelegate? NativeOnPlayerClickMap;
+	public static event OnPlayerClickPlayerDelegate? NativeOnPlayerClickPlayer;
+	public static event OnClientCheckResponseDelegate? NativeOnClientCheckResponse;
+	public static event OnPlayerUpdateDelegate? NativeOnPlayerUpdate;
 
-	[UnmanagedCallersOnly()]
-	private static void OnIncomingConnection(UnmanagedEntityId player, IntPtr ipAddress, ushort port)
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static void OnIncomingConnection(EntityId player, IntPtr ipAddress, ushort port)
 	{
 		NativeOnIncomingConnection?.Invoke(player, Marshal.PtrToStringAnsi(ipAddress)!, port);
 	}
 
-	[UnmanagedCallersOnly()]
-	private static void OnPlayerConnect(UnmanagedEntityId player)
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static void OnPlayerConnect(EntityId player)
 	{
 		NativeOnPlayerConnect?.Invoke(player);
 	}
 
-	[UnmanagedCallersOnly()]
-	private static void OnPlayerDisconnect(UnmanagedEntityId player, int reason)
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static void OnPlayerDisconnect(EntityId player, int reason)
 	{
 		NativeOnPlayerDisconnect?.Invoke(player, reason);
 	}
 
-	[UnmanagedCallersOnly()]
-	private static void OnPlayerClientInit(UnmanagedEntityId player)
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static void OnPlayerClientInit(EntityId player)
 	{
 		NativeOnPlayerClientInit?.Invoke(player);
 	}
 
-	[UnmanagedCallersOnly()]
-	private static int OnPlayerRequestSpawn(UnmanagedEntityId player)
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static int OnPlayerRequestSpawn(EntityId player)
 	{
 		if (NativeOnPlayerRequestSpawn is null)
 		{
@@ -52,9 +100,166 @@ internal static partial class NativePlayerEvent
 		return NativeOnPlayerRequestSpawn.Invoke(player);
 	}
 
-	[UnmanagedCallersOnly()]
-	private static void OnPlayerSpawn(UnmanagedEntityId player)
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static void OnPlayerSpawn(EntityId player)
 	{
 		NativeOnPlayerSpawn?.Invoke(player);
+	}
+
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static void OnPlayerStreamIn(EntityId player, EntityId forPlayer)
+	{
+		NativeOnPlayerStreamIn?.Invoke(player, forPlayer);
+	}
+
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static void OnPlayerStreamOut(EntityId player, EntityId forPlayer)
+	{
+		NativeOnPlayerStreamOut?.Invoke(player, forPlayer);
+	}
+
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static bool OnPlayerText(EntityId player, IntPtr message)
+	{
+		if (NativeOnPlayerText is null)
+		{
+			return true;
+		}
+		return NativeOnPlayerText(player, Marshal.PtrToStringAnsi(message) ?? string.Empty);
+	}
+
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static bool OnPlayerCommandText(EntityId player, IntPtr message)
+	{
+		if (NativeOnPlayerCommandText is null)
+		{
+			return true;
+		}
+		return NativeOnPlayerCommandText(player, Marshal.PtrToStringAnsi(message) ?? string.Empty);
+	}
+
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static bool OnPlayerShotMissed(EntityId player, PlayerBulletData bulletData)
+	{
+		if (NativeOnPlayerShotMissed is null)
+		{
+			return true;
+		}
+		return NativeOnPlayerShotMissed(player, bulletData);
+	}
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static bool OnPlayerShotPlayer(EntityId player, EntityId target, PlayerBulletData bulletData)
+	{
+		if (NativeOnPlayerShotPlayer is null)
+		{
+			return true;
+		}
+		return NativeOnPlayerShotPlayer(player, target, bulletData);
+	}
+
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static bool OnPlayerShotVehicle(EntityId player, EntityId target, PlayerBulletData bulletData)
+	{
+		if (NativeOnPlayerShotVehicle is null)
+		{
+			return true;
+		}
+		return NativeOnPlayerShotVehicle(player, target, bulletData);
+	}
+
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static bool OnPlayerShotObject(EntityId player, EntityId target, PlayerBulletData bulletData)
+	{
+		if (NativeOnPlayerShotObject is null)
+		{
+			return true;
+		}
+		return NativeOnPlayerShotObject(player, target, bulletData);
+	}
+
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static bool OnPlayerShotPlayerObject(EntityId player, EntityId target, PlayerBulletData bulletData)
+	{
+		if (NativeOnPlayerShotPlayerObject is null)
+		{
+			return true;
+		}
+		return NativeOnPlayerShotPlayerObject(player, target, bulletData);
+	}
+
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static void OnPlayerScoreChange(EntityId player, int score)
+	{
+		NativeOnPlayerScoreChange?.Invoke(player, score);
+	}
+
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static void OnPlayerNameChange(EntityId player, IntPtr oldName)
+	{
+		NativeOnPlayerNameChange?.Invoke(player, Marshal.PtrToStringAnsi(oldName) ?? string.Empty);
+	}
+
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static void OnPlayerInteriorChange(EntityId player, uint newInterior, uint oldInterior)
+	{
+		NativeOnPlayerInteriorChange?.Invoke(player, newInterior, oldInterior);
+	}
+
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static void OnPlayerStateChange(EntityId player, PlayerState newState, PlayerState oldState)
+	{
+		NativeOnPlayerStateChange?.Invoke(player, newState, oldState);
+	}
+
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static void OnPlayerKeyStateChange(EntityId player, uint newKeys, uint oldKeys)
+	{
+		NativeOnPlayerKeyStateChange?.Invoke(player, newKeys, oldKeys);
+	}
+
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static void OnPlayerDeath(EntityId player, EntityId killer, int reason)
+	{
+		NativeOnPlayerDeath?.Invoke(player, killer, reason);
+	}
+
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static void OnPlayerTakeDamage(EntityId player, EntityId from, float amount, uint weapon, BodyPart part)
+	{
+		NativeOnPlayerTakeDamage?.Invoke(player, from, amount, weapon, part);
+	}
+
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static void OnPlayerGiveDamage(EntityId player, EntityId to, float amount, uint weapon, BodyPart part)
+	{
+		NativeOnPlayerGiveDamage?.Invoke(player, to, amount, weapon, part);
+	}
+
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static void OnPlayerClickMap(EntityId player, Vector3 pos)
+	{
+		NativeOnPlayerClickMap?.Invoke(player, pos);
+	}
+
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static void OnPlayerClickPlayer(EntityId player, EntityId clicked, PlayerClickSource source)
+	{
+		NativeOnPlayerClickPlayer?.Invoke(player, clicked, source);
+	}
+
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static void OnClientCheckResponse(EntityId player, int actionType, int address, int results)
+	{
+		NativeOnClientCheckResponse?.Invoke(player, actionType, address, results);
+	}
+
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static bool OnPlayerUpdate(EntityId player, long now)
+	{
+		if (NativeOnPlayerUpdate is null)
+		{
+			return true;
+		}
+		return NativeOnPlayerUpdate(player, now);
 	}
 }
