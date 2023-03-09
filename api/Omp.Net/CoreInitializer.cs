@@ -30,7 +30,7 @@ internal static class CoreInitializer
 		}
 
 		var entry = (BaseEntry)instance;
-		NativeCoreEvent.ReadyEvent += entry.OnReady;
+		NativeCoreEvent.NativeOnReady += entry.OnReady;
 
 		_ = new Core(entry);
 	}

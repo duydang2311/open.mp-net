@@ -1,16 +1,17 @@
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Omp.Net.CApi.Events;
 
-public delegate void ReadyDelegate();
+internal delegate void OnReadyDelegate();
 
-public static partial class NativeCoreEvent
+internal static partial class NativeCoreEvent
 {
-	public static event ReadyDelegate? ReadyEvent;
+	public static event OnReadyDelegate? NativeOnReady;
 
-	[UnmanagedCallersOnly()]
-	private static void Ready()
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static void OnReady()
 	{
-		ReadyEvent?.Invoke();
+		NativeOnReady?.Invoke();
 	}
 }
