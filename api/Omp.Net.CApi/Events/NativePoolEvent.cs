@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Omp.Net.Shared;
+using Omp.Net.Shared.Data;
 
 namespace Omp.Net.CApi.Events;
 
@@ -20,6 +21,14 @@ internal delegate void OnTextLabelCreatedDelegate(EntityId textLabel);
 internal delegate void OnTextLabelDestroyedDelegate(EntityId textLabel);
 internal delegate void OnPlayerTextLabelCreatedDelegate(EntityId playerTextLabel);
 internal delegate void OnPlayerTextLabelDestroyedDelegate(EntityId playerTextLabel);
+internal delegate void OnClassCreatedDelegate(int id);
+internal delegate void OnClassDestroyedDelegate(int id);
+internal delegate void OnGangZoneCreatedDelegate(int id);
+internal delegate void OnGangZoneDestroyedDelegate(int id);
+internal delegate void OnMenuCreatedDelegate(int id);
+internal delegate void OnMenuDestroyedDelegate(int id);
+internal delegate void OnTextDrawCreatedDelegate(int id);
+internal delegate void OnTextDrawDestroyedDelegate(int id);
 
 internal static class NativePoolEvent
 {
@@ -39,6 +48,14 @@ internal static class NativePoolEvent
 	public static event OnTextLabelDestroyedDelegate? NativeOnTextLabelDestroyed;
 	public static event OnPlayerTextLabelCreatedDelegate? NativeOnPlayerTextLabelCreated;
 	public static event OnPlayerTextLabelDestroyedDelegate? NativeOnPlayerTextLabelDestroyed;
+	public static event OnClassCreatedDelegate? NativeOnClassCreated;
+	public static event OnClassDestroyedDelegate? NativeOnClassDestroyed;
+	public static event OnGangZoneCreatedDelegate? NativeOnGangZoneCreated;
+	public static event OnGangZoneDestroyedDelegate? NativeOnGangZoneDestroyed;
+	public static event OnMenuCreatedDelegate? NativeOnMenuCreated;
+	public static event OnMenuDestroyedDelegate? NativeOnMenuDestroyed;
+	public static event OnTextDrawCreatedDelegate? NativeOnTextDrawCreated;
+	public static event OnTextDrawDestroyedDelegate? NativeOnTextDrawDestroyed;
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
 	private static void OnActorCreated(EntityId actor)
@@ -134,5 +151,53 @@ internal static class NativePoolEvent
 	private static void OnPlayerTextLabelDestroyed(EntityId playerTextLabel)
 	{
 		NativeOnPlayerTextLabelDestroyed?.Invoke(playerTextLabel);
+	}
+
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static void OnClassCreated(int id)
+	{
+		NativeOnClassCreated?.Invoke(id);
+	}
+
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static void OnClassDestroyed(int id)
+	{
+		NativeOnClassDestroyed?.Invoke(id);
+	}
+
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static void OnGangZoneCreated(int id)
+	{
+		NativeOnGangZoneCreated?.Invoke(id);
+	}
+
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static void OnGangZoneDestroyed(int id)
+	{
+		NativeOnGangZoneDestroyed?.Invoke(id);
+	}
+
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static void OnMenuCreated(int id)
+	{
+		NativeOnMenuCreated?.Invoke(id);
+	}
+
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static void OnMenuDestroyed(int id)
+	{
+		NativeOnMenuDestroyed?.Invoke(id);
+	}
+
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static void OnTextDrawCreated(int id)
+	{
+		NativeOnTextDrawCreated?.Invoke(id);
+	}
+
+	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+	private static void OnTextDrawDestroyed(int id)
+	{
+		NativeOnTextDrawDestroyed?.Invoke(id);
 	}
 }
