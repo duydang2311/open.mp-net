@@ -11,12 +11,12 @@ internal static class NativeClassEvent
 	public static event OnPlayerRequestClassDelegate? NativeOnPlayerRequestClass;
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
-	private static bool OnPlayerRequestClass(EntityId player, uint classId)
+	private static int OnPlayerRequestClass(EntityId player, uint classId)
 	{
 		if (NativeOnPlayerRequestClass is null)
 		{
-			return true;
+			return 1;
 		}
-		return NativeOnPlayerRequestClass(player, classId);
+		return NativeOnPlayerRequestClass(player, classId) ? 1 : 0;
 	}
 }

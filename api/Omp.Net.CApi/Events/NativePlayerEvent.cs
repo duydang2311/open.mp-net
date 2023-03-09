@@ -35,7 +35,6 @@ internal delegate void OnPlayerClickPlayerDelegate(EntityId player, EntityId cli
 internal delegate void OnClientCheckResponseDelegate(EntityId player, int actionType, int address, int results);
 internal delegate bool OnPlayerUpdateDelegate(EntityId player, long now);
 
-
 internal static partial class NativePlayerEvent
 {
 	public static event OnIncomingConnectionDelegate? NativeOnIncomingConnection;
@@ -119,72 +118,72 @@ internal static partial class NativePlayerEvent
 	}
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
-	private static bool OnPlayerText(EntityId player, IntPtr message)
+	private static int OnPlayerText(EntityId player, IntPtr message)
 	{
 		if (NativeOnPlayerText is null)
 		{
-			return true;
+			return 1;
 		}
-		return NativeOnPlayerText(player, Marshal.PtrToStringAnsi(message) ?? string.Empty);
+		return NativeOnPlayerText(player, Marshal.PtrToStringAnsi(message) ?? string.Empty) ? 1 : 0;
 	}
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
-	private static bool OnPlayerCommandText(EntityId player, IntPtr message)
+	private static int OnPlayerCommandText(EntityId player, IntPtr message)
 	{
 		if (NativeOnPlayerCommandText is null)
 		{
-			return true;
+			return 1;
 		}
-		return NativeOnPlayerCommandText(player, Marshal.PtrToStringAnsi(message) ?? string.Empty);
+		return NativeOnPlayerCommandText(player, Marshal.PtrToStringAnsi(message) ?? string.Empty) ? 1 : 0;
 	}
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
-	private static bool OnPlayerShotMissed(EntityId player, PlayerBulletData bulletData)
+	private static int OnPlayerShotMissed(EntityId player, PlayerBulletData bulletData)
 	{
 		if (NativeOnPlayerShotMissed is null)
 		{
-			return true;
+			return 1;
 		}
-		return NativeOnPlayerShotMissed(player, bulletData);
+		return NativeOnPlayerShotMissed(player, bulletData) ? 1 : 0;
 	}
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
-	private static bool OnPlayerShotPlayer(EntityId player, EntityId target, PlayerBulletData bulletData)
+	private static int OnPlayerShotPlayer(EntityId player, EntityId target, PlayerBulletData bulletData)
 	{
 		if (NativeOnPlayerShotPlayer is null)
 		{
-			return true;
+			return 1;
 		}
-		return NativeOnPlayerShotPlayer(player, target, bulletData);
+		return NativeOnPlayerShotPlayer(player, target, bulletData) ? 1 : 0;
 	}
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
-	private static bool OnPlayerShotVehicle(EntityId player, EntityId target, PlayerBulletData bulletData)
+	private static int OnPlayerShotVehicle(EntityId player, EntityId target, PlayerBulletData bulletData)
 	{
 		if (NativeOnPlayerShotVehicle is null)
 		{
-			return true;
+			return 1;
 		}
-		return NativeOnPlayerShotVehicle(player, target, bulletData);
+		return NativeOnPlayerShotVehicle(player, target, bulletData) ? 1 : 0;
 	}
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
-	private static bool OnPlayerShotObject(EntityId player, EntityId target, PlayerBulletData bulletData)
+	private static int OnPlayerShotObject(EntityId player, EntityId target, PlayerBulletData bulletData)
 	{
 		if (NativeOnPlayerShotObject is null)
 		{
-			return true;
+			return 1;
 		}
-		return NativeOnPlayerShotObject(player, target, bulletData);
+		return NativeOnPlayerShotObject(player, target, bulletData) ? 1 : 0;
 	}
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
-	private static bool OnPlayerShotPlayerObject(EntityId player, EntityId target, PlayerBulletData bulletData)
+	private static int OnPlayerShotPlayerObject(EntityId player, EntityId target, PlayerBulletData bulletData)
 	{
 		if (NativeOnPlayerShotPlayerObject is null)
 		{
-			return true;
+			return 1;
 		}
-		return NativeOnPlayerShotPlayerObject(player, target, bulletData);
+		return NativeOnPlayerShotPlayerObject(player, target, bulletData) ? 1 : 0;
 	}
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
@@ -254,12 +253,12 @@ internal static partial class NativePlayerEvent
 	}
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
-	private static bool OnPlayerUpdate(EntityId player, long now)
+	private static int OnPlayerUpdate(EntityId player, long now)
 	{
 		if (NativeOnPlayerUpdate is null)
 		{
-			return true;
+			return 1;
 		}
-		return NativeOnPlayerUpdate(player, now);
+		return NativeOnPlayerUpdate(player, now) ? 1 : 0;
 	}
 }

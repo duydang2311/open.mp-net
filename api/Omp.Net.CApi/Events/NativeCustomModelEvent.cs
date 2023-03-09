@@ -20,12 +20,12 @@ internal static class NativeCustomModelEvent
 	}
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
-	private static bool OnPlayerRequestDownload(EntityId player, ModelDownloadType type, uint checksum)
+	private static int OnPlayerRequestDownload(EntityId player, ModelDownloadType type, uint checksum)
 	{
 		if (NativeOnPlayerRequestDownload is null)
 		{
-			return true;
+			return 1;
 		}
-		return NativeOnPlayerRequestDownload(player, type, checksum);
+		return NativeOnPlayerRequestDownload(player, type, checksum) ? 1 : 0;
 	}
 }

@@ -29,22 +29,22 @@ internal static class NativeTextDrawEvent
 	}
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
-	private static bool OnPlayerCancelTextDrawSelection(EntityId player)
+	private static int OnPlayerCancelTextDrawSelection(EntityId player)
 	{
 		if (NativeOnPlayerCancelTextDrawSelection is null)
 		{
-			return true;
+			return 1;
 		}
-		return NativeOnPlayerCancelTextDrawSelection(player);
+		return NativeOnPlayerCancelTextDrawSelection(player) ? 1 : 0;
 	}
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
-	private static bool OnPlayerCancelPlayerTextDrawSelection(EntityId player)
+	private static int OnPlayerCancelPlayerTextDrawSelection(EntityId player)
 	{
 		if (NativeOnPlayerCancelPlayerTextDrawSelection is null)
 		{
-			return true;
+			return 1;
 		}
-		return NativeOnPlayerCancelPlayerTextDrawSelection(player);
+		return NativeOnPlayerCancelPlayerTextDrawSelection(player) ? 1 : 0;
 	}
 }

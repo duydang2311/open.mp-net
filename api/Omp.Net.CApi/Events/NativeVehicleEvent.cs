@@ -74,33 +74,33 @@ internal static class NativeVehicleEvent
 	}
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
-	private static bool OnVehiclePaintJob(EntityId player, EntityId vehicle, int paintJob)
+	private static int OnVehiclePaintJob(EntityId player, EntityId vehicle, int paintJob)
 	{
 		if (NativeOnVehiclePaintJob is null)
 		{
-			return true;
+			return 1;
 		}
-		return NativeOnVehiclePaintJob(player, vehicle, paintJob);
+		return NativeOnVehiclePaintJob(player, vehicle, paintJob) ? 1 : 0;
 	}
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
-	private static bool OnVehicleMod(EntityId player, EntityId vehicle, int component)
+	private static int OnVehicleMod(EntityId player, EntityId vehicle, int component)
 	{
 		if (NativeOnVehicleMod is null)
 		{
-			return true;
+			return 1;
 		}
-		return NativeOnVehicleMod(player, vehicle, component);
+		return NativeOnVehicleMod(player, vehicle, component) ? 1 : 0;
 	}
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
-	private static bool OnVehicleRespray(EntityId player, EntityId vehicle, int color1, int color2)
+	private static int OnVehicleRespray(EntityId player, EntityId vehicle, int color1, int color2)
 	{
 		if (NativeOnVehicleRespray is null)
 		{
-			return true;
+			return 1;
 		}
-		return NativeOnVehicleRespray(player, vehicle, color1, color2);
+		return NativeOnVehicleRespray(player, vehicle, color1, color2) ? 1 : 0;
 	}
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
@@ -116,32 +116,32 @@ internal static class NativeVehicleEvent
 	}
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
-	private static bool OnUnoccupiedVehicleUpdate(EntityId vehicle, EntityId player, UnoccupiedVehicleUpdateData data)
+	private static int OnUnoccupiedVehicleUpdate(EntityId vehicle, EntityId player, UnoccupiedVehicleUpdateData data)
 	{
 		if (NativeOnUnoccupiedVehicleUpdate is null)
 		{
-			return true;
+			return 1;
 		}
-		return NativeOnUnoccupiedVehicleUpdate(vehicle, player, data);
+		return NativeOnUnoccupiedVehicleUpdate(vehicle, player, data) ? 1 : 0;
 	}
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
-	private static bool OnTrailerUpdate(EntityId player, EntityId trailer)
+	private static int OnTrailerUpdate(EntityId player, EntityId trailer)
 	{
 		if (NativeOnTrailerUpdate is null)
 		{
-			return true;
+			return 1;
 		}
-		return NativeOnTrailerUpdate(player, trailer);
+		return NativeOnTrailerUpdate(player, trailer) ? 1 : 0;
 	}
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
-	private static bool OnVehicleSirenStateChange(EntityId player, EntityId vehicle, byte sirenState)
+	private static int OnVehicleSirenStateChange(EntityId player, EntityId vehicle, byte sirenState)
 	{
 		if (NativeOnVehicleSirenStateChange is null)
 		{
-			return true;
+			return 1;
 		}
-		return NativeOnVehicleSirenStateChange(player, vehicle, sirenState);
+		return NativeOnVehicleSirenStateChange(player, vehicle, sirenState) ? 1 : 0;
 	}
 }
