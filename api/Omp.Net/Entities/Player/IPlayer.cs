@@ -1,134 +1,135 @@
 using System.Drawing;
 using System.Numerics;
-using Omp.Net.Entities.TextDraw;
+using Omp.Net.Shared;
 using Omp.Net.Shared.Data;
 using Omp.Net.Shared.Enums;
 
 namespace Omp.Net.Entities;
 
-public interface IPlayer
+public interface IPlayer : IEntity
 {
-	IntPtr NativeHandle { get; }
-	int Id { get; }
-	Vector3 Position { get; }
-	float FacingAngle { get; }
-	int Interior { get; }
-	float Health { get; }
-	float Armour { get; }
-	int Ammo { get; }
-	PlayerWeaponState WeaponState { get; }
-	IPlayer TargetPlayer { get; }
-	int TargetActor { get; }
-	int Team { get; }
-	int Score { get; }
-	int DrunkLevel { get; }
-	Color Colour { get; }
-	int Skin { get; }
-	int Money { get; }
-	PlayerState State { get; }
-	string Ip { get; }
-	uint Ping { get; }
-	PlayerWeapon ArmedWeapon { get; }
-	string Name { get; }
-	uint WantedLevel { get; }
-	int FightingStyle { get; }
-	Vector3 Velocity { get; }
-	int SurfingVehicleID { get; }
-	int SurfingObjectID { get; }
-	int VehicleID { get; }
-	int VehicleSeat { get; }
-	uint AnimationIndex { get; }
-	PlayerSpecialAction SpecialAction { get; }
-	Vector3 CameraPos { get; }
-	Vector3 FrontVector { get; }
-	byte CameraMode { get; }
-	int CameraTargetObject { get; }
-	int CameraTargetVehicle { get; }
-	int CameraTargetPlayer { get; }
-	int CameraTargetActor { get; }
-	float CameraAspectRatio { get; }
-	float CameraZoom { get; }
-	int VirtualWorld { get; }
-	KeysData Keys { get; }
-	TimeData Time { get; }
-	ShotVectorsData LastShotVectors { get; }
-	bool Connected { get; }
-	bool IsInAnyVehicle { get; }
-	bool IsInCheckpoint { get; }
-	bool IsInRaceCheckpoint { get; }
+	bool IsBot { get; }
+	bool UseGhostMode { get; set; }
+	bool IsUsingOfficialClient { get; }
+	bool AllowWeapons { get; set; }
+	bool AllowTeleport { get; set; }
+	bool UseClock { get; set; }
+	bool UseWidescreen { get; set; }
+	bool UseStuntBonuses { set; }
+	bool UseCameraTargeting { get; set; }
 
-	bool GetWeaponData(int slot, out WeaponData data);
-	bool SetSpawnInfo(int team, int skin, Vector3 position, float rotation, int weapon1 = 0, int ammo1 = 0, int weapon2 = 0, int ammo2 = 0, int weapon3 = 0, int ammo3 = 0);
-	bool Spawn();
-	bool SetPosition(Vector3 position);
-	bool SetPositionFindZ(Vector3 position);
-	bool SetFacingAngle(float angle);
+	PeerNetworkData NetworkData { get; }
+	uint Ping { get; }
+	ClientVersion ClientVersion { get; }
+	string ClientVersionName { get; }
+	Vector3 CameraPosition { get; set; }
+	Vector3 CameraLookAt { get; }
+	string Name { get; }
+	string Serial { get; }
+	IReadOnlyCollection<WeaponSlotData> Weapons { get; }
+	PlayerWeapon ArmedWeapon { get; set; }
+	uint ArmedWeaponAmmo { get; }
+	string ShopName { get; set; }
+	int DrunkLevel { get; set; }
+	Color Color { get; set; }
+	bool Controllable { get; set; }
+	uint WantedLevel { get; set; }
+	int Money { get; set; }
+	TimeData Time { get; set; }
+	float Health { get; set; }
+	int Score { get; set; }
+	float Armour { get; set; }
+	float Gravity { get; set; }
+	PlayerAnimationData AnimationData { get; }
+	PlayerSurfingData SurfingData { get; }
+	PlayerState State { get; }
+	int Team { get; set; }
+	int Skin { get; }
+	int Weather { get; set; }
+	Vector4 WorldBounds { get; set; }
+	PlayerFightingStyle FightingStyle { get; set; }
+	PlayerSpecialAction Action { get; set; }
+	Vector3 Velocity { get; set; }
+	uint Interior { get; set; }
+	PlayerKeyData KeyData { get; }
+	IReadOnlyCollection<ushort> SkillLevels { get; }
+	PlayerAimData AimData { get; }
+	PlayerBulletData BulletData { get; }
+	IPlayer CameraTargetPlayer { get; }
+	IntPtr CameraTargetVehicle { get; }
+	IntPtr CameraTargetObject { get; }
+	IntPtr CameraTargetActor { get; }
+	IPlayer TargetPlayer { get; }
+	IntPtr TargetActor { get; }
+	PlayerSpectateData SpectateData { get; }
+	int DefaultObjectsRemoved { get; }
+	bool KickStatus { get; }
+
+	void SetPositionFindZ(Vector3 pos);
+	void SetCameraLookAt(Vector3 pos, PlayerCameraCutType cutType = PlayerCameraCutType.Cut);
+	void SetCameraBehind();
+	PlayerNameStatus SetName(string name);
+	void SetWeaponAmmo(WeaponSlotData data);
+	void SetOtherColour(IPlayer other, Color color);
+	void SetSpectating(bool spectating);
+	void SetMapIcon(int id, Vector3 pos, int type, Color color, MapIconStyle style);
+	void SetTransform(Vector3 vec3);
+	void SetWorldTime(long time);
+	void SetSkin(int skin, bool send = true);
+	void SetChatBubble(string text, Color color, float drawDist, long expireMs);
+	void SetSkillLevel(PlayerWeaponSkill skill, int level);
+	void SetRemoteVehicleCollisions(bool collide);
+
+	IReadOnlyCollection<IPlayer> GetStreamedPlayers();
+	string GetGameText(int style, out long timeMs, out long remainingMs);
+	WeaponSlotData GetWeaponSlot(int slot);
+	bool GetOtherColour(IntPtr other, out Color color);
+
+	void Kick();
+	void Ban(string reason = "");
+	bool SendPacket(Span<byte> data, int channel, bool dispatchEvents = true);
+	bool SendRPC(int id, Span<byte> data, int channel, bool dispatchEvents = true);
+	void BroadcastRPCToStreamed(int id, Span<byte> data, int channel, bool skipFrom = false);
+	void BroadcastPacketToStreamed(Span<byte> data, int channel, bool skipFrom = true);
+	void BroadcastSyncPacket(Span<byte> data, int channel);
+	void Spawn();
+	void InterpolateCameraPosition(Vector3 from, Vector3 to, int time, PlayerCameraCutType cutType = PlayerCameraCutType.Cut);
+	void InterpolateCameraLookAt(Vector3 from, Vector3 to, int time, PlayerCameraCutType cutType = PlayerCameraCutType.Cut);
+	void AttachCameraToObject(IntPtr obj);
+	void AttachCameraToPlayerObject(IntPtr playerObject);
+	void GiveWeapon(WeaponSlotData weapon);
+	void RemoveWeapon(PlayerWeapon weapon);
+	void ResetWeapons();
+	void PlaySound(uint sound, Vector3 pos);
+	uint LastPlayedSound();
+	void PlayAudio(string url);
+	void PlayAudio(string url, Vector3 pos, float distance);
+	bool PlayerCrimeReport(IPlayer suspect, int crime);
+	void StopAudio();
+	string LastPlayedAudio();
+	void CreateExplosion(Vector3 vec, int type, float radius);
+	void SendDeathMessage(IPlayer killed, IPlayer? killer, PlayerWeapon weapon);
+	void SendEmptyDeathMessage();
+	void RemoveDefaultObjects(uint model, Vector3 pos, float radius);
+	void ForceClassSelection();
+	void GiveMoney(int money);
+	void ResetMoney();
+	void UnsetMapIcon(int id);
+	void ToggleOtherNameTag(IPlayer other, bool toggle);
+	void ApplyAnimation(AnimationData animation, PlayerAnimationSyncType syncType = PlayerAnimationSyncType.NoSync);
+	void ClearAnimations(PlayerAnimationSyncType syncType = PlayerAnimationSyncType.NoSync);
+	void StreamInForPlayer(IPlayer other);
+	void StreamOutForPlayer(IPlayer other);
+	void SendClientMessage(Color color, string message);
+	void SendChatMessage(IPlayer sender, string message);
+	void SendCommand(string message);
+	void SendGameText(string message, long timeMs, int style);
+	void HideGameText(int style);
+	bool HasGameText(int style);
+	void RemoveFromVehicle(bool force);
+	void SpectatePlayer(IPlayer target, PlayerSpectateMode mode);
+	void SpectateVehicle(IntPtr target, PlayerSpectateMode mode);
+	void SendClientCheck(int actionType, int address, int offset, int count);
+	void ClearTasks(PlayerAnimationSyncType syncType = PlayerAnimationSyncType.NoSync);
 	bool IsStreamedInFor(IPlayer other);
-	bool SetInterior(uint interiorId);
-	bool SetHealth(float health);
-	bool SetArmour(float armour);
-	bool SetAmmo(PlayerWeapon weapon, int ammo);
-	bool SetTeam(int teamId);
-	bool SetScore(int score);
-	bool SetDrunkLevel(int level);
-	bool SetColor(Color color);
-	bool SetSkin(int skinid);
-	bool GiveWeapon(PlayerWeapon weapon, int ammo);
-	bool ResetWeapons();
-	bool SetArmedWeapon(PlayerWeapon weapon);
-	bool GiveMoney(int money);
-	bool ResetMoney();
-	int SetName(string name);
-	bool SetTime(TimeData data);
-	bool ToggleClock(bool toggle);
-	bool SetWeather(int weather);
-	bool ForceClassSelection();
-	bool SetWantedLevel(uint level);
-	bool SetFightingStyle(int style);
-	bool SetVelocity(Vector3 velocity);
-	bool PlayCrimeReport(IPlayer suspect, int crime);
-	bool PlayAudioStream(string url, Vector3 position, float radius = 50, bool usepos = false);
-	bool StopAudioStream();
-	bool SetShopName(string shopname);
-	bool SetSkillLevel(PlayerWeaponSkill skill, int level);
-	bool RemoveBuilding(int modelid, Vector3 position, float radius);
-	bool SetAttachedObject(int index, int modelid, int bone, Vector3 offset, Vector3 rotation = default, Vector3? scale = null, Color materialColor1 = default, Color materialColor2 = default);
-	bool RemoveAttachedObject(int index);
-	bool IsAttachedObjectSlotUsed(int index);
-	bool EditAttachedObject(int index);
-	IPlayerTextDraw CreateTextDraw(Vector2 position, string text);
-	IPlayerTextDraw CreateTextDraw(Vector2 position, int model);
-	bool SetChatBubble(string text, int color, float drawDistance, int expireTime);
-	bool PutInVehicle(int vehicleId, int seatId);
-	bool RemoveFromVehicle(bool force);
-	bool ToggleControllable(bool toggle);
-	bool PlaySound(uint soundId, Vector3 position);
-	bool ApplyAnimation(string animLibrary, string animName, float delta, bool loop, bool lockX, bool lockY, bool freeze, int time, PlayerAnimationSyncType syncType = PlayerAnimationSyncType.NoSync);
-	bool ClearAnimations(PlayerAnimationSyncType syncType = PlayerAnimationSyncType.NoSync);
-	bool SetSpecialAction(PlayerSpecialAction action);
-	bool DisableRemoteVehicleCollisions(bool collide);
-	bool SetCheckpoint(Vector3 position, float radius);
-	bool DisableCheckpoint();
-	bool SetRaceCheckpoint(int type, Vector3 position, Vector3 nextPosition, float radius);
-	bool DisableRaceCheckpoint();
-	bool SetWorldBounds(float x_max, float x_min, float y_max, float y_min);
-	bool SetMarkerFor(IPlayer other, int color);
-	bool ShowNameTagFor(IPlayer other, bool show);
-	bool SetMapIcon(int iconId, Vector3 position, int markertype, Color color, MapIconStyle style = MapIconStyle.Local);
-	bool RemoveMapIcon(int iconId);
-	bool AllowTeleport(bool allow);
-	bool SetCameraPos(Vector3 position);
-	bool SetCameraLookAt(Vector3 position, PlayerCameraCutType cut_type = PlayerCameraCutType.Cut);
-	bool SetCameraBehind();
-	bool EnableCameraTarget(bool enable);
-	bool AttachCameraToObject(int objectId);
-	bool InterpolateCameraPos(Vector3 fromPosition, Vector3 toPosition, int time, PlayerCameraCutType cut_type = PlayerCameraCutType.Cut);
-	bool InterpolateCameraLookAt(Vector3 fromPosition, Vector3 toPosition, int time, PlayerCameraCutType cut_type = PlayerCameraCutType.Cut);
-	bool SetVirtualWorld(int worldId);
-	bool EnableStuntBonus(bool enable);
-	bool ToggleSpectating(bool toggle);
-	bool Spectate(IPlayer target, PlayerSpectateMode mode = PlayerSpectateMode.Normal);
-	bool Spectate(int targetvehicleid, PlayerSpectateMode mode = PlayerSpectateMode.Normal);
-	bool CreateExplosion(Vector3 position, int type, float radius);
-	bool IsInVehicle(int vehicleid);
 }

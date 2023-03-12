@@ -1,213 +1,130 @@
 using System.Drawing;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using Omp.Net.Entities.TextDraw;
+using Omp.Net.Shared;
 using Omp.Net.Shared.Data;
 using Omp.Net.Shared.Enums;
 using static Omp.Net.CApi.Natives.PlayerNative;
 
 namespace Omp.Net.Entities;
 
-public partial class BasePlayer : IPlayer
+public class BasePlayer : BaseEntity, IPlayer
 {
-	private readonly int id;
-	private readonly IntPtr nativeHandle;
+	public BasePlayer(IntPtr nativeHandle, int id) : base(nativeHandle, id) { }
 
-	public IntPtr NativeHandle => nativeHandle;
-	public int Id => id;
+	public bool IsBot => Player_IsBot(NativeHandle);
 
-	public BasePlayer(IntPtr nativeHandle, int id)
+	public bool UseGhostMode { get => Player_IsGhostModeEnabled(NativeHandle); set => Player_ToggleGhostMode(NativeHandle, value); }
+
+	public bool IsUsingOfficialClient => Player_IsUsingOfficialClient(NativeHandle);
+
+	public bool AllowWeapons
 	{
-		this.nativeHandle = nativeHandle;
-		this.id = id;
+		get => Player_AreWeaponsAllowed(NativeHandle);
+		set => Player_AllowWeapons(NativeHandle, value);
 	}
 
-	public string Name
+	public bool AllowTeleport
 	{
-		get
-		{
-			var ptr = Marshal.AllocHGlobal(GameConstants.MaxPlayerName);
-			Player_GetName(id, ptr, GameConstants.MaxPlayerName);
-			var name = Marshal.PtrToStringAnsi(ptr, GameConstants.MaxPlayerName);
-			Marshal.FreeHGlobal(ptr);
-			return name;
-		}
+		get => Player_IsTeleportAllowed(NativeHandle);
+		set => Player_AllowTeleport(NativeHandle, value);
 	}
 
-	public Vector3 Position
+	public bool UseClock
 	{
-		get
-		{
-			unsafe
-			{
-				float x, y, z;
-				Player_GetPosition(id, &x, &y, &z);
-				return new Vector3(x, y, z);
-			}
-		}
+		get => Player_HasClock(NativeHandle);
+		set => Player_UseClock(NativeHandle, value);
 	}
 
-	public float FacingAngle
+	public bool UseWidescreen
 	{
-		get
-		{
-			unsafe
-			{
-				float angle;
-				Player_GetFacingAngle(id, &angle);
-				return angle;
-			}
-		}
+		get => Player_HasWidescreen(NativeHandle);
+		set => Player_UseWidescreen(NativeHandle, value);
 	}
 
-	public int Interior => (int)Player_GetInterior(Id);
+	public bool UseStuntBonuses { set => Player_UseStuntBonuses(NativeHandle, value); }
 
-	public float Health
+	public bool UseCameraTargeting
 	{
-		get
-		{
-			unsafe
-			{
-				float health;
-				Player_GetHealth(Id, &health);
-				return health;
-			}
-		}
+		get => Player_HasCameraTargeting(NativeHandle);
+		set => Player_UseCameraTargeting(NativeHandle, value);
 	}
 
-	public float Armour
+
+	public PeerNetworkData NetworkData => Player_GetNetworkData(NativeHandle);
+
+	public uint Ping => Player_GetPing(NativeHandle);
+
+	public ClientVersion ClientVersion => Player_GetClientVersion(NativeHandle);
+
+	public string ClientVersionName => Marshal.PtrToStringAnsi(Player_GetClientVersionName(NativeHandle)) ?? string.Empty;
+
+	public Vector3 CameraPosition
+	{
+		get => Player_GetCameraPosition(NativeHandle);
+		set => Player_SetCameraPosition(NativeHandle, value);
+	}
+
+	public Vector3 CameraLookAt => Player_GetCameraLookAt(NativeHandle);
+
+	public string Name => Marshal.PtrToStringAnsi(Player_GetName(NativeHandle)) ?? string.Empty;
+
+	public string Serial => Marshal.PtrToStringAnsi(Player_GetSerial(NativeHandle)) ?? string.Empty;
+
+	public IReadOnlyCollection<WeaponSlotData> Weapons
 	{
 		get
 		{
 			unsafe
 			{
-				float armour;
-				Player_GetArmour(Id, &armour);
-				return armour;
+				var slots = new WeaponSlotData[GameConstants.MaxWeaponSlots];
+				var ptr = Player_GetWeapons(NativeHandle);
+				for (var i = 0; i != GameConstants.MaxWeaponSlots; ++i)
+				{
+					slots[i] = (WeaponSlotData)Marshal.PtrToStructure(IntPtr.Add(ptr, i * sizeof(WeaponSlotData)), typeof(WeaponSlotData))!;
+				}
+				return slots;
 			}
 		}
 	}
 
-	public int Ammo => Player_GetAmmo(Id);
+	public PlayerWeapon ArmedWeapon { get => (PlayerWeapon)Player_GetArmedWeapon(NativeHandle); set => Player_SetArmedWeapon(NativeHandle, (uint)value); }
 
-	public PlayerWeaponState WeaponState => (PlayerWeaponState)Player_GetWeaponState(Id);
+	public uint ArmedWeaponAmmo => Player_GetArmedWeaponAmmo(NativeHandle);
 
-	public IPlayer TargetPlayer => throw new NotImplementedException();
-
-	public int TargetActor => Player_GetTargetActor(Id);
-
-	public int Team => Player_GetTeam(Id);
-
-	public int Score => Player_GetScore(Id);
-
-	public int DrunkLevel => Player_GetDrunkLevel(Id);
-
-	public Color Colour => Color.FromArgb((int)Player_GetColour(Id));
-
-	public int Skin => Player_GetSkin(Id);
-
-	public int Money => Player_GetMoney(Id);
-
-	public PlayerState State => (PlayerState)Player_GetState(Id);
-
-	public string Ip
+	public string ShopName
 	{
-		get
-		{
-			var ptr = Marshal.AllocHGlobal(GameConstants.MaxIpv4Length);
-			Player_GetIp(Id, ptr, GameConstants.MaxIpv4Length);
-			var ip = Marshal.PtrToStringAnsi(ptr);
-			Marshal.FreeHGlobal(ptr);
-			return ip!;
-		}
+		get => Marshal.PtrToStringAnsi(Player_GetShopName(NativeHandle)) ?? string.Empty;
+		set => Player_SetShopName(NativeHandle, value);
+	}
+	public int DrunkLevel
+	{
+		get => Player_GetDrunkLevel(NativeHandle);
+		set => Player_SetDrunkLevel(NativeHandle, value);
 	}
 
-	public uint Ping => Player_GetPing(Id);
-
-	public PlayerWeapon ArmedWeapon => (PlayerWeapon)Player_GetArmedWeapon(Id);
-
-	public uint WantedLevel => Player_GetWantedLevel(Id);
-
-	public int FightingStyle => Player_GetFightingStyle(Id);
-
-	public Vector3 Velocity
+	public Color Color
 	{
-		get
-		{
-			unsafe
-			{
-				float x, y, z;
-				Player_GetVelocity(Id, &x, &y, &z);
-				return new Vector3(x, y, z);
-			}
-		}
+		get => Color.FromArgb((int)Player_GetColour(NativeHandle));
+		set => Player_SetColour(NativeHandle, (uint)value.ToArgb());
 	}
 
-	public int SurfingVehicleID => Player_GetSurfingVehicleID(Id);
-
-	public int SurfingObjectID => Player_GetSurfingObjectID(Id);
-
-	public int VehicleID => Player_GetVehicleID(Id);
-
-	public int VehicleSeat => Player_GetVehicleSeat(Id);
-
-	public uint AnimationIndex => Player_GetAnimationIndex(Id);
-
-	public PlayerSpecialAction SpecialAction => (PlayerSpecialAction)Player_GetSpecialAction(Id);
-
-	public Vector3 CameraPos
+	public bool Controllable
 	{
-		get
-		{
-			unsafe
-			{
-				float x, y, z;
-				Player_GetCameraPos(Id, &x, &y, &z);
-				return new Vector3(x, y, z);
-			}
-		}
+		get => Player_GetControllable(NativeHandle);
+		set => Player_SetControllable(NativeHandle, value);
 	}
 
-	public Vector3 FrontVector
+	public uint WantedLevel
 	{
-		get
-		{
-			unsafe
-			{
-				float x, y, z;
-				Player_GetCameraFrontVector(Id, &x, &y, &z);
-				return new Vector3(x, y, z);
-			}
-		}
+		get => Player_GetWantedLevel(NativeHandle);
+		set => Player_SetWantedLevel(NativeHandle, value);
 	}
 
-	public byte CameraMode => Player_GetCameraMode(Id);
-
-	public int CameraTargetObject => Player_GetCameraTargetObject(Id);
-
-	public int CameraTargetVehicle => Player_GetCameraTargetVehicle(Id);
-
-	public int CameraTargetPlayer => Player_GetCameraTargetPlayer(Id);
-
-	public int CameraTargetActor => Player_GetCameraTargetActor(Id);
-
-	public float CameraAspectRatio => Player_GetCameraAspectRatio(Id);
-
-	public float CameraZoom => Player_GetCameraZoom(Id);
-
-	public int VirtualWorld => Player_GetVirtualWorld(Id);
-
-	public KeysData Keys
+	public int Money
 	{
-		get
-		{
-			unsafe
-			{
-				int keys, updown, leftright;
-				Player_GetKeys(Id, &keys, &updown, &leftright);
-				return new KeysData((GameKey)keys, (GameKey)updown, (GameKey)leftright);
-			}
-		}
+		get => Player_GetMoney(NativeHandle);
+		set => Player_SetMoney(NativeHandle, value);
 	}
 
 	public TimeData Time
@@ -216,412 +133,477 @@ public partial class BasePlayer : IPlayer
 		{
 			unsafe
 			{
-				int hour, minute;
-				Player_GetTime(Id, &hour, &minute);
-				return new TimeData(hour, minute);
+				long hr, min;
+				Player_GetTime(NativeHandle, &hr, &min);
+				return new TimeData(hr, min);
 			}
 		}
+		set => Player_SetTime(NativeHandle, value.Hour, value.Minute);
 	}
 
-	public ShotVectorsData LastShotVectors
+	public float Health
+	{
+		get => Player_GetHealth(NativeHandle);
+		set => Player_SetHealth(NativeHandle, value);
+	}
+
+	public int Score
+	{
+		get => Player_GetScore(NativeHandle);
+		set => Player_SetScore(NativeHandle, value);
+	}
+
+	public float Armour
+	{
+		get => Player_GetArmour(NativeHandle);
+		set => Player_SetArmour(NativeHandle, value);
+	}
+
+	public float Gravity
+	{
+		get => Player_GetGravity(NativeHandle);
+		set => Player_SetGravity(NativeHandle, value);
+	}
+
+
+
+	public PlayerAnimationData AnimationData => Player_GetAnimationData(NativeHandle);
+
+	public PlayerSurfingData SurfingData => Player_GetSurfingData(NativeHandle);
+
+	public PlayerState State => Player_GetState(NativeHandle);
+
+	public int Team { get => Player_GetTeam(NativeHandle); set => Player_SetTeam(NativeHandle, value); }
+
+	public int Skin => Player_GetSkin(NativeHandle);
+
+	public int Weather
+	{
+		get => Player_GetWeather(NativeHandle);
+		set => Player_SetWeather(NativeHandle, value);
+	}
+
+	public Vector4 WorldBounds
+	{
+		get => Player_GetWorldBounds(NativeHandle);
+		set => Player_SetWorldBounds(NativeHandle, value);
+	}
+
+	public PlayerFightingStyle FightingStyle
+	{
+		get => Player_GetFightingStyle(NativeHandle);
+		set => Player_SetFightingStyle(NativeHandle, value);
+	}
+
+	public PlayerSpecialAction Action
+	{
+		get => Player_GetAction(NativeHandle);
+		set => Player_SetAction(NativeHandle, value);
+	}
+
+	public Vector3 Velocity
+	{
+		get => Player_GetVelocity(NativeHandle);
+		set => Player_SetVelocity(NativeHandle, value);
+	}
+
+	public uint Interior
+	{
+		get => Player_GetInterior(NativeHandle);
+		set => Player_SetInterior(NativeHandle, value);
+	}
+
+
+	public PlayerKeyData KeyData => Player_GetKeyData(NativeHandle);
+
+	public IReadOnlyCollection<ushort> SkillLevels
 	{
 		get
 		{
 			unsafe
 			{
-				float originX, originY, originZ, hitX, hitY, hitZ;
-				Player_GetLastShotVectors(Id, &originX, &originY, &originZ, &hitX, &hitY, &hitZ);
-				return new ShotVectorsData(originX, originY, originZ, hitX, hitY, hitZ);
+				var levels = new ushort[GameConstants.NumSkillLevels];
+				var ptr = Player_GetSkillLevels(NativeHandle);
+				for (var i = 0; i != GameConstants.NumSkillLevels; ++i)
+				{
+					levels[i] = (ushort)Marshal.ReadIntPtr(ptr, i * sizeof(ushort)).ToInt32();
+				}
+				return levels;
 			}
 		}
 	}
 
-	public bool Connected => Player_IsConnected(Id);
+	public PlayerAimData AimData => Player_GetAimData(NativeHandle);
 
-	public bool IsInAnyVehicle => Player_IsInAnyVehicle(Id);
+	public PlayerBulletData BulletData => Player_GetBulletData(NativeHandle);
 
-	public bool IsInCheckpoint => Player_IsInCheckpoint(Id);
+	public IPlayer CameraTargetPlayer => throw new NotImplementedException(); // TODO: use entity pool
 
-	public bool IsInRaceCheckpoint => Player_IsInRaceCheckpoint(Id);
+	public IntPtr CameraTargetVehicle => Player_GetCameraTargetVehicle(NativeHandle);
 
-	public int SetName(string name)
+	public IntPtr CameraTargetObject => Player_GetCameraTargetObject(NativeHandle);
+
+	public IntPtr CameraTargetActor => Player_GetCameraTargetActor(NativeHandle);
+
+	public IPlayer TargetPlayer => throw new NotImplementedException(); // TODO: use entity pool
+
+	public IntPtr TargetActor => Player_GetTargetActor(NativeHandle);
+
+	public PlayerSpectateData SpectateData => Player_GetSpectateData(NativeHandle);
+
+	public int DefaultObjectsRemoved => Player_GetDefaultObjectsRemoved(NativeHandle);
+
+	public bool KickStatus => Player_GetKickStatus(NativeHandle);
+
+	public void ApplyAnimation(AnimationData animation, PlayerAnimationSyncType syncType = PlayerAnimationSyncType.NoSync)
 	{
-		return Player_SetName(id, name);
+		Player_ApplyAnimation(NativeHandle, animation, syncType);
 	}
 
-	public bool Spawn()
+	public void AttachCameraToObject(IntPtr obj)
 	{
-		return Player_Spawn(id);
+		Player_AttachCameraToObject(NativeHandle, obj);
 	}
 
-	public bool SetPosition(float x, float y, float z)
+	public void AttachCameraToPlayerObject(IntPtr playerObject)
 	{
-		return Player_SetPosition(id, x, y, z);
+		Player_AttachCameraToPlayerObject(NativeHandle, playerObject);
 	}
 
-	public bool SetPositionFindZ(float x, float y, float z)
+	public void Ban(string reason = "")
 	{
-		return Player_SetPositionFindZ(id, x, y, z);
+		Player_Ban(NativeHandle, reason);
 	}
 
-	public bool SetFacingAngle(float angle)
+	public void BroadcastPacketToStreamed(Span<byte> data, int channel, bool skipFrom = true)
 	{
-		return Player_SetFacingAngle(id, angle);
+		// properly won't work
+		Player_BroadcastPacketToStreamed(NativeHandle, data, channel, skipFrom);
 	}
 
-	public bool GetWeaponData(int slot, out WeaponData data)
+	public void BroadcastRPCToStreamed(int id, Span<byte> data, int channel, bool skipFrom = false)
 	{
-		throw new NotImplementedException();
+		// properly won't work
+		Player_BroadcastRPCToStreamed(NativeHandle, id, data, channel, skipFrom);
 	}
 
-	public bool SetSpawnInfo(int team, int skin, Vector3 position, float rotation, int weapon1 = 0, int ammo1 = 0, int weapon2 = 0, int ammo2 = 0, int weapon3 = 0, int ammo3 = 0)
+	public void BroadcastSyncPacket(Span<byte> data, int channel)
 	{
-		return Player_SetSpawnInfo(id, team, skin, position.X, position.Y, position.Z, rotation, weapon1, ammo1, weapon2, ammo2, weapon3, ammo3);
+		// properly won't work
+		Player_BroadcastSyncPacket(NativeHandle, data, channel);
 	}
 
-	public bool SetPosition(Vector3 position)
+	public void ClearAnimations(PlayerAnimationSyncType syncType = PlayerAnimationSyncType.NoSync)
 	{
-		return Player_SetPosition(Id, position.X, position.Y, position.Z);
+		Player_ClearAnimations(NativeHandle, syncType);
 	}
 
-	public bool SetPositionFindZ(Vector3 position)
+	public void ClearTasks(PlayerAnimationSyncType syncType = PlayerAnimationSyncType.NoSync)
 	{
-		return Player_SetPositionFindZ(Id, position.X, position.Y, position.Z);
+		Player_ClearTasks(NativeHandle, syncType);
+	}
+
+	public void CreateExplosion(Vector3 position, int type, float radius)
+	{
+		Player_CreateExplosion(NativeHandle, position, type, radius);
+	}
+
+	public void ForceClassSelection()
+	{
+		Player_ForceClassSelection(NativeHandle);
+	}
+
+	public string GetGameText(int style, out long timeMs, out long remainingMs)
+	{
+		unsafe
+		{
+			long timeMs_, remainingMs_;
+			var ptr = Player_GetGameText(NativeHandle, style, &timeMs_, &remainingMs_);
+			timeMs = timeMs_;
+			remainingMs = remainingMs_;
+			return Marshal.PtrToStringAnsi(ptr) ?? string.Empty;
+		}
+	}
+
+	public bool GetOtherColour(IntPtr other, out Color color)
+	{
+		unsafe
+		{
+			uint argb;
+			var ret = Player_GetOtherColour(NativeHandle, other, &argb);
+			color = Color.FromArgb((int)argb);
+			return ret;
+		}
+	}
+
+	public IReadOnlyCollection<IPlayer> GetStreamedPlayers()
+	{
+		var ptr = Marshal.AllocHGlobal(4);
+		var length = Player_GetStreamedPlayers(NativeHandle, ptr);
+		var streamedPlayers = new IPlayer[length];
+		for (var i = 0; i != length; ++i)
+		{
+			var nativeHandle = Marshal.ReadIntPtr(ptr, i * 4);
+			// TODO: use entity pool
+		}
+		Marshal.FreeHGlobal(ptr);
+		return streamedPlayers;
+	}
+
+	public WeaponSlotData GetWeaponSlot(int slot)
+	{
+		return Player_GetWeaponSlot(NativeHandle, slot);
+	}
+
+	public void GiveMoney(int money)
+	{
+		Player_GiveMoney(NativeHandle, money);
+	}
+
+	public void GiveWeapon(WeaponSlotData weapon)
+	{
+		Player_GiveWeapon(NativeHandle, weapon);
+	}
+
+	public bool HasGameText(int style)
+	{
+		return Player_HasGameText(NativeHandle, style);
+	}
+
+	public void HideGameText(int style)
+	{
+		Player_HideGameText(NativeHandle, style);
+	}
+
+	public void InterpolateCameraLookAt(Vector3 from, Vector3 to, int time, PlayerCameraCutType cutType = PlayerCameraCutType.Cut)
+	{
+		Player_InterpolateCameraLookAt(NativeHandle, from, to, time, cutType);
+	}
+
+	public void InterpolateCameraPosition(Vector3 from, Vector3 to, int time, PlayerCameraCutType cutType = PlayerCameraCutType.Cut)
+	{
+		Player_InterpolateCameraPosition(NativeHandle, from, to, time, cutType);
 	}
 
 	public bool IsStreamedInFor(IPlayer other)
 	{
-		return Player_IsStreamedInFor(Id, other.Id);
+		return Player_IsStreamedInForPlayer(NativeHandle, other.NativeHandle);
 	}
 
-	public bool SetInterior(uint interiorId)
+	public void Kick()
 	{
-		return Player_SetInterior(Id, interiorId);
+		Player_Kick(NativeHandle);
 	}
 
-	public bool SetHealth(float health)
+	public string LastPlayedAudio()
 	{
-		return Player_SetHealth(Id, health);
+		return Marshal.PtrToStringAnsi(Player_LastPlayedAudio(NativeHandle)) ?? string.Empty;
 	}
 
-	public bool SetArmour(float armour)
+	public uint LastPlayedSound()
 	{
-		return Player_SetArmour(Id, armour);
+		return Player_LastPlayedSound(NativeHandle);
 	}
 
-	public bool SetAmmo(PlayerWeapon weapon, int ammo)
+	public void PlayAudio(string url)
 	{
-		return Player_SetAmmo(Id, (int)weapon, ammo);
+		Player_PlayAudio(NativeHandle, url, false, Vector3.Zero, 0);
 	}
 
-	public bool SetTeam(int teamId)
+	public void PlayAudio(string url, Vector3 pos, float distance)
 	{
-		return Player_SetTeam(Id, teamId);
+		Player_PlayAudio(NativeHandle, url, true, pos, distance);
 	}
 
-	public bool SetScore(int score)
+	public bool PlayerCrimeReport(IPlayer suspect, int crime)
 	{
-		return Player_SetScore(Id, score);
+		return Player_PlayerCrimeReport(NativeHandle, suspect.NativeHandle, crime);
 	}
 
-	public bool SetDrunkLevel(int level)
+	public void PlaySound(uint sound, Vector3 pos)
 	{
-		return Player_SetDrunkLevel(Id, level);
+		Player_PlaySound(NativeHandle, sound, pos);
 	}
 
-	public bool SetColor(Color color)
+	public void RemoveDefaultObjects(uint model, Vector3 pos, float radius)
 	{
-		return Player_SetColor(Id, (uint)color.ToArgb());
+		Player_RemoveDefaultObjects(NativeHandle, model, pos, radius);
 	}
 
-	public bool SetSkin(int skinid)
+	public void RemoveFromVehicle(bool force)
 	{
-		return Player_SetSkin(Id, skinid);
+		Player_RemoveFromVehicle(NativeHandle, force);
 	}
 
-	public bool GiveWeapon(PlayerWeapon weapon, int ammo)
+	public void RemoveWeapon(PlayerWeapon weapon)
 	{
-		return Player_GiveWeapon(Id, (int)weapon, ammo);
+		Player_RemoveWeapon(NativeHandle, (byte)weapon);
 	}
 
-	public bool ResetWeapons()
+	public void ResetMoney()
 	{
-		return Player_ResetWeapons(Id);
+		Player_ResetMoney(NativeHandle);
 	}
 
-	public bool SetArmedWeapon(PlayerWeapon weapon)
+	public void ResetWeapons()
 	{
-		return Player_SetArmedWeapon(Id, (uint)weapon);
+		Player_ResetWeapons(NativeHandle);
 	}
 
-	public bool GiveMoney(int money)
+	public void SendChatMessage(IPlayer sender, string message)
 	{
-		return Player_GiveMoney(Id, money);
+		Player_SendChatMessage(NativeHandle, sender.NativeHandle, message);
 	}
 
-	public bool ResetMoney()
+	public void SendClientCheck(int actionType, int address, int offset, int count)
 	{
-		return Player_ResetMoney(Id);
+		Player_SendClientCheck(NativeHandle, actionType, address, offset, count);
 	}
 
-	public bool SetTime(TimeData data)
+	public void SendClientMessage(Color color, string message)
 	{
-		return Player_SetTime(Id, data.Hour, data.Minute);
+		Player_SendClientMessage(NativeHandle, (uint)color.ToArgb(), message);
 	}
 
-	public bool ToggleClock(bool toggle)
+	public void SendCommand(string message)
 	{
-		return Player_ToggleClock(Id, toggle);
+		Player_SendCommand(NativeHandle, message);
 	}
 
-	public bool SetWeather(int weather)
+	public void SendDeathMessage(IPlayer killed, IPlayer? killer, PlayerWeapon weapon)
 	{
-		return Player_SetWeather(Id, weather);
+		Player_SendDeathMessage(NativeHandle, killed.NativeHandle, killer?.NativeHandle ?? IntPtr.Zero, (int)weapon);
 	}
 
-	public bool ForceClassSelection()
+	public void SendEmptyDeathMessage()
 	{
-		return Player_ForceClassSelection(Id);
+		Player_SendEmptyDeathMessage(NativeHandle);
 	}
 
-	public bool SetWantedLevel(uint level)
+	public void SendGameText(string message, long timeMs, int style)
 	{
-		return Player_SetWantedLevel(Id, level);
+		Player_SendGameText(NativeHandle, message, timeMs, style);
 	}
 
-	public bool SetFightingStyle(int style)
+	public bool SendPacket(Span<byte> data, int channel, bool dispatchEvents = true)
 	{
-		return Player_SetFightingStyle(Id, style);
+		// propertly won't work
+		return Player_SendPacket(NativeHandle, data, channel, dispatchEvents);
 	}
 
-	public bool SetVelocity(Vector3 velocity)
+	public bool SendRPC(int id, Span<byte> data, int channel, bool dispatchEvents = true)
 	{
-		return Player_SetVelocity(Id, velocity.X, velocity.Y, velocity.Z);
+		// propertly won't work
+		return Player_SendRPC(NativeHandle, id, data, channel, dispatchEvents);
 	}
 
-	public bool PlayCrimeReport(IPlayer suspect, int crime)
+	public void SetCameraBehind()
 	{
-		return Player_PlayCrimeReport(Id, suspect.Id, crime);
+		Player_SetCameraBehind(NativeHandle);
 	}
 
-	public bool PlayAudioStream(string url, Vector3 position, float radius = 50, bool usepos = false)
+	public void SetCameraLookAt(Vector3 pos, PlayerCameraCutType cutType = PlayerCameraCutType.Cut)
 	{
-		return Player_PlayAudioStream(Id, url, position.X, position.Y, position.Z, radius, usepos);
+		Player_SetCameraLookAt(NativeHandle, pos, cutType);
 	}
 
-	public bool StopAudioStream()
+	public void SetChatBubble(string text, Color color, float drawDist, long expireMs)
 	{
-		return Player_StopAudioStream(Id);
+		Player_SetChatBubble(NativeHandle, text, (uint)color.ToArgb(), drawDist, expireMs);
 	}
 
-	public bool SetShopName(string shopname)
+	public void SetMapIcon(int id, Vector3 pos, int type, Color color, MapIconStyle style)
 	{
-		return Player_SetShopName(Id, shopname);
+		Player_SetMapIcon(NativeHandle, id, pos, type, (uint)color.ToArgb(), style);
 	}
 
-	public bool SetSkillLevel(PlayerWeaponSkill skill, int level)
+	public PlayerNameStatus SetName(string name)
 	{
-		return Player_SetSkillLevel(Id, (int)skill, level);
+		return Player_SetName(NativeHandle, name);
 	}
 
-	public bool RemoveBuilding(int modelid, Vector3 position, float radius)
+	public void SetOtherColour(IPlayer other, Color color)
 	{
-		return Player_RemoveBuilding(Id, modelid, position.X, position.Y, position.Z, radius);
+		Player_SetOtherColour(NativeHandle, other.NativeHandle, (uint)color.ToArgb());
 	}
 
-	public bool SetAttachedObject(int index, int modelid, int bone, Vector3 offset, Vector3 rotation = default, Vector3? scale = null, Color materialColor1 = default, Color materialColor2 = default)
+	public void SetPositionFindZ(Vector3 pos)
 	{
-		scale ??= Vector3.One;
-		return Player_SetAttachedObject(Id, index, modelid, bone, offset.X, offset.Y, offset.Z, rotation.X, rotation.Y, rotation.Z, scale.Value.X, scale.Value.Y, scale.Value.Z, materialColor1.ToArgb(), materialColor2.ToArgb());
+		Player_SetPositionFindZ(NativeHandle, pos);
 	}
 
-	public bool RemoveAttachedObject(int index)
+	public void SetRemoteVehicleCollisions(bool collide)
 	{
-		return Player_RemoveAttachedObject(Id, index);
+		Player_SetRemoteVehicleCollisions(NativeHandle, collide);
 	}
 
-	public bool IsAttachedObjectSlotUsed(int index)
+	public void SetSkillLevel(PlayerWeaponSkill skill, int level)
 	{
-		return Player_IsAttachedObjectSlotUsed(Id, index);
+		Player_SetSkillLevel(NativeHandle, skill, level);
 	}
 
-	public bool EditAttachedObject(int index)
+	public void SetSkin(int skin, bool send = true)
 	{
-		return Player_EditAttachedObject(Id, index);
+		Player_SetSkin(NativeHandle, skin, send);
 	}
 
-	public IPlayerTextDraw CreateTextDraw(Vector2 position, string text)
+	public void SetSpectating(bool spectating)
 	{
-		return Core.Instance.GetTextDrawFactory().Create(this, position, text);
+		Player_SetSpectating(NativeHandle, spectating);
 	}
 
-	public IPlayerTextDraw CreateTextDraw(Vector2 position, int model)
+	public void SetTransform(Vector3 vec3)
 	{
-		return Core.Instance.GetTextDrawFactory().Create(this, position, model);
+		Player_SetTransform(NativeHandle, vec3);
 	}
 
-	public bool SetChatBubble(string text, int color, float drawDistance, int expireTime)
+	public void SetWeaponAmmo(WeaponSlotData data)
 	{
-		return Player_SetChatBubble(Id, text, color, drawDistance, expireTime);
+		Player_SetWeaponAmmo(NativeHandle, data);
 	}
 
-	public bool PutInVehicle(int vehicleId, int seatId)
+	public void SetWorldTime(long time)
 	{
-		return Player_PutInVehicle(Id, vehicleId, seatId);
+		Player_SetWorldTime(NativeHandle, time);
 	}
 
-	public bool RemoveFromVehicle(bool force)
+	public void Spawn()
 	{
-		return Player_RemoveFromVehicle(Id, force);
+		Player_Spawn(NativeHandle);
 	}
 
-	public bool ToggleControllable(bool toggle)
+	public void SpectatePlayer(IPlayer target, PlayerSpectateMode mode)
 	{
-		return Player_ToggleControllable(Id, toggle);
+		Player_SpectatePlayer(NativeHandle, target.NativeHandle, mode);
 	}
 
-	public bool PlaySound(uint soundId, Vector3 position)
+	public void SpectateVehicle(IntPtr target, PlayerSpectateMode mode)
 	{
-		return Player_PlaySound(Id, soundId, position.X, position.Y, position.Z);
+		Player_SpectateVehicle(NativeHandle, target, mode);
 	}
 
-	public bool ApplyAnimation(string animLibrary, string animName, float delta, bool loop, bool lockX, bool lockY, bool freeze, int time, PlayerAnimationSyncType syncType = PlayerAnimationSyncType.NoSync)
+	public void StopAudio()
 	{
-		return Player_ApplyAnimation(Id, animLibrary, animName, delta, loop, lockX, lockY, freeze, time, (int)syncType);
+		Player_StopAudio(NativeHandle);
 	}
 
-	public bool ClearAnimations(PlayerAnimationSyncType syncType = PlayerAnimationSyncType.NoSync)
+	public void StreamInForPlayer(IPlayer other)
 	{
-		return Player_ClearAnimations(Id, (int)syncType);
+		Player_StreamInForPlayer(NativeHandle, other.NativeHandle);
 	}
 
-	public bool SetSpecialAction(PlayerSpecialAction action)
+	public void StreamOutForPlayer(IPlayer other)
 	{
-		return Player_SetSpecialAction(Id, (int)action);
+		Player_StreamOutForPlayer(NativeHandle, other.NativeHandle);
 	}
 
-	public bool DisableRemoteVehicleCollisions(bool collide)
+	public void ToggleOtherNameTag(IPlayer other, bool toggle)
 	{
-		return Player_DisableRemoteVehicleCollisions(Id, collide);
+		Player_ToggleOtherNameTag(NativeHandle, other.NativeHandle, toggle);
 	}
 
-	public bool SetCheckpoint(Vector3 position, float radius)
+	public void UnsetMapIcon(int id)
 	{
-		return Player_SetCheckpoint(Id, position.X, position.Y, position.Z, radius);
-	}
-
-	public bool DisableCheckpoint()
-	{
-		return Player_DisableCheckpoint(Id);
-	}
-
-	public bool SetRaceCheckpoint(int type, Vector3 position, Vector3 nextPosition, float radius)
-	{
-		return Player_SetRaceCheckpoint(Id, type, position.X, position.Y, position.Z, nextPosition.X, nextPosition.Y, nextPosition.Z, radius);
-	}
-
-	public bool DisableRaceCheckpoint()
-	{
-		return Player_DisableRaceCheckpoint(Id);
-	}
-
-	public bool SetWorldBounds(float maxX, float minX, float maxY, float minY)
-	{
-		return Player_SetWorldBounds(Id, maxX, minX, maxY, minY);
-	}
-
-	public bool SetMarkerFor(IPlayer other, int color)
-	{
-		return PLayer_SetMarkerFor(Id, other.Id, color);
-	}
-
-	public bool ShowNameTagFor(IPlayer other, bool show)
-	{
-		return Player_ShowNameTagFor(Id, other.Id, show);
-	}
-
-	public bool SetMapIcon(int iconId, Vector3 position, int markertype, Color color, MapIconStyle style = MapIconStyle.Local)
-	{
-		return Player_SetMapIcon(Id, iconId, position.X, position.Y, position.Z, markertype, (uint)color.ToArgb(), (int)style);
-	}
-
-	public bool RemoveMapIcon(int iconId)
-	{
-		return Player_RemoveMapIcon(Id, iconId);
-	}
-
-	public bool AllowTeleport(bool allow)
-	{
-		return Player_AllowTeleport(Id, allow);
-	}
-
-	public bool SetCameraPos(Vector3 position)
-	{
-		return Player_SetCameraPos(Id, position.X, position.Y, position.Z);
-	}
-
-	public bool SetCameraLookAt(Vector3 position, PlayerCameraCutType cutType = PlayerCameraCutType.Cut)
-	{
-		return Player_SetCameraLookAt(Id, position.X, position.Y, position.Z, (int)cutType);
-	}
-
-	public bool SetCameraBehind()
-	{
-		return Player_SetCameraBehind(Id);
-	}
-
-	public bool EnableCameraTarget(bool enable)
-	{
-		return Player_EnableCameraTarget(Id, enable);
-	}
-
-	public bool AttachCameraToObject(int objectId)
-	{
-		return Player_AttachCameraToObject(Id, objectId);
-	}
-
-	public bool InterpolateCameraPos(Vector3 fromPosition, Vector3 toPosition, int time, PlayerCameraCutType cutType = PlayerCameraCutType.Cut)
-	{
-		return Player_InterpolateCameraPos(Id, fromPosition.X, fromPosition.Y, fromPosition.Z, toPosition.X, toPosition.Y, toPosition.Z, time, (int)cutType);
-	}
-
-	public bool InterpolateCameraLookAt(Vector3 fromPosition, Vector3 toPosition, int time, PlayerCameraCutType cutType = PlayerCameraCutType.Cut)
-	{
-		return Player_InterpolateCameraLookAt(Id, fromPosition.X, fromPosition.Y, fromPosition.Z, toPosition.X, toPosition.Y, toPosition.Z, time, (int)cutType);
-	}
-
-	public bool SetVirtualWorld(int worldId)
-	{
-		return Player_SetVirtualWorld(Id, worldId);
-	}
-
-	public bool EnableStuntBonus(bool enable)
-	{
-		return Player_EnableStuntBonus(Id, enable);
-	}
-
-	public bool ToggleSpectating(bool toggle)
-	{
-		return Player_ToggleSpectating(Id, toggle);
-	}
-
-	public bool Spectate(IPlayer target, PlayerSpectateMode mode = PlayerSpectateMode.Normal)
-	{
-		return Player_SpectatePlayer(Id, target.Id, (int)mode);
-	}
-
-	public bool Spectate(int targetvehicleid, PlayerSpectateMode mode = PlayerSpectateMode.Normal)
-	{
-		return Player_SpectateVehicle(Id, targetvehicleid, (int)mode);
-	}
-
-	public bool CreateExplosion(Vector3 position, int type, float radius)
-	{
-		return Player_CreateExplosion(Id, position.X, position.Y, position.Z, type, radius);
-	}
-
-	public bool IsInVehicle(int vehicleid)
-	{
-		return Player_IsInVehicle(Id, vehicleid);
+		Player_UnsetMapIcon(NativeHandle, id);
 	}
 }

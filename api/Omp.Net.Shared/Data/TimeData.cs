@@ -2,10 +2,10 @@ namespace Omp.Net.Shared.Data;
 
 public readonly record struct TimeData
 {
-	public readonly int Hour { get; init; }
-	public readonly int Minute { get; init; }
+	public readonly long Hour { get; init; }
+	public readonly long Minute { get; init; }
 
-	public TimeData(int hour, int minute)
+	public TimeData(long hour, long minute)
 	{
 		Hour = hour;
 		Minute = minute;

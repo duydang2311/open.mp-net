@@ -1,6 +1,6 @@
 namespace Omp.Net.Shared.Enums;
 
-public enum PlayerWeapon
+public enum PlayerWeapon : byte
 {
 	Fist,
 	BrassKnuckle,
