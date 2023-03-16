@@ -1,3 +1,5 @@
+using static Omp.Net.CApi.Natives.EntityNative;
+
 namespace Omp.Net.Entities;
 
 public abstract class EntityPool<T> : IEntityPool<T> where T : class
@@ -10,9 +12,31 @@ public abstract class EntityPool<T> : IEntityPool<T> where T : class
 		this.factory = factory;
 	}
 
+	public virtual T Create(IntPtr nativeHandle)
+	{
+		return factory.Create(nativeHandle, Entity_GetId(nativeHandle));
+	}
+
 	public virtual T Create(IntPtr nativeHandle, int id)
 	{
 		return factory.Create(nativeHandle, id);
+	}
+
+	public virtual T Get(IntPtr nativeHandle)
+	{
+		if (!cache.TryGetValue(nativeHandle, out var reference))
+		{
+			var entity = factory.Create(nativeHandle);
+			cache.Add(nativeHandle, new WeakReference<T>(entity));
+			return entity;
+		}
+		if (!reference.TryGetTarget(out var cachedEntity))
+		{
+			var entity = factory.Create(nativeHandle);
+			reference.SetTarget(entity);
+			return entity;
+		}
+		return cachedEntity;
 	}
 
 	public virtual T Get(IntPtr nativeHandle, int id)
