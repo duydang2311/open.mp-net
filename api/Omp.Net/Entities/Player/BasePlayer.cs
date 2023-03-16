@@ -354,8 +354,7 @@ public class BasePlayer : BaseEntity, IPlayer
 		var streamedPlayers = new IPlayer[length];
 		for (var i = 0; i != length; ++i)
 		{
-			var nativeHandle = Marshal.ReadIntPtr(ptr, i * 4);
-			// TODO: use entity pool
+			streamedPlayers[i] = Core.Instance.PlayerPool.Get(Marshal.ReadIntPtr(ptr, i * 4));
 		}
 		Marshal.FreeHGlobal(ptr);
 		return streamedPlayers;
