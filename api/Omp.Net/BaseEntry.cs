@@ -1,3 +1,4 @@
+using Omp.Net.Entities;
 using Omp.Net.Entities.Player;
 using Omp.Net.Entities.TextDraw;
 using Omp.Net.Threading;
@@ -8,7 +9,7 @@ public abstract class BaseEntry
 {
 	public abstract void OnReady();
 
-	public virtual IPlayerFactory GetPlayerFactory()
+	public virtual IEntityFactory<IPlayer> GetPlayerFactory()
 	{
 		return new PlayerFactory();
 	}
