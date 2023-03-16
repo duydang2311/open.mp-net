@@ -279,7 +279,7 @@ internal static partial class PlayerNative
 	public static extern void Player_StreamOutForPlayer(IntPtr player, IntPtr other);
 
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
-	public static extern uint Player_GetStreamedPlayers(IntPtr player, IntPtr streamPlayers);
+	public static extern uint Player_GetStreamedPlayers(IntPtr player, IntPtr streamedPlayers);
 
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
 	public static extern PlayerState Player_GetState(IntPtr player);
@@ -318,7 +318,7 @@ internal static partial class PlayerNative
 	public static extern bool Player_HasGameText(IntPtr player, int style);
 
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
-	public static unsafe extern char* Player_GetGameText(IntPtr player, int style, long* timeMs, long* remainingMs);
+	public static unsafe extern IntPtr Player_GetGameText(IntPtr player, int style, long* timeMs, long* remainingMs);
 
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
 	public static extern void Player_SetWeather(IntPtr player, int weatherID);
