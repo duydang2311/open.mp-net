@@ -12,6 +12,7 @@ public sealed class Core
 	public static Core Instance { get; private set; } = null!;
 
 	public IEntityPool<IPlayer> PlayerPool { get; }
+	public ITextDrawPool GlobalTextDrawPool { get; }
 	public ITextDrawFactory TextDrawFactory => textDrawFactory;
 
 	internal Core(BaseEntry entry)
@@ -19,6 +20,7 @@ public sealed class Core
 		Instance = this;
 		tickSchedulerFactory = entry.GetTickSchedulerFactory();
 		PlayerPool = new PlayerPool(entry.GetPlayerFactory());
+		GlobalTextDrawPool = new TextDrawPool();
 		textDrawFactory = entry.GetTextDrawFactory();
 		tickScheduler = tickSchedulerFactory.Create(Thread.CurrentThread);
 
@@ -39,11 +41,6 @@ public sealed class Core
 	public Task<T> InvokeAsync<T>(Func<Task<T>> func)
 	{
 		return tickScheduler.ScheduleAsync(func);
-	}
-
-	public IReadOnlyCollection<IPlayer> GetAllPlayers()
-	{
-		return playerPool.GetAll();
 	}
 
 	private delegate void TickDelegate();
