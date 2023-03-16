@@ -1,6 +1,7 @@
 using System.Drawing;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using Omp.Net.Entities.TextDraw;
 using Omp.Net.Shared;
 using Omp.Net.Shared.Data;
 using Omp.Net.Shared.Enums;
@@ -10,9 +11,20 @@ namespace Omp.Net.Entities;
 
 public class BasePlayer : BaseEntity, IPlayer
 {
+	private ITextDrawPool? textDrawPool;
+
 	public BasePlayer(IntPtr nativeHandle, int id) : base(nativeHandle, id) { }
 
 	public bool IsBot => Player_IsBot(NativeHandle);
+
+	public IEnumerable<IPlayerTextDraw> TextDraws
+	{
+		get
+		{
+			textDrawPool ??= new TextDrawPool();
+			return textDrawPool.GetAll().Cast<IPlayerTextDraw>();
+		}
+	}
 
 	public bool UseGhostMode { get => Player_IsGhostModeEnabled(NativeHandle); set => Player_ToggleGhostMode(NativeHandle, value); }
 
@@ -49,7 +61,6 @@ public class BasePlayer : BaseEntity, IPlayer
 		get => Player_HasCameraTargeting(NativeHandle);
 		set => Player_UseCameraTargeting(NativeHandle, value);
 	}
-
 
 	public PeerNetworkData NetworkData => Player_GetNetworkData(NativeHandle);
 
@@ -549,12 +560,27 @@ public class BasePlayer : BaseEntity, IPlayer
 
 	public void SetSpectating(bool spectating)
 	{
+<<<<<<< HEAD
 		Player_SetSpectating(NativeHandle, spectating);
+=======
+		return Core.Instance.TextDrawFactory.Create(this, position, text);
+>>>>>>> 3d910f4 (wip)
 	}
 
 	public void SetTransform(Vector3 vec3)
 	{
+<<<<<<< HEAD
 		Player_SetTransform(NativeHandle, vec3);
+=======
+		return Core.Instance.TextDrawFactory.Create(this, position, model);
+	}
+
+	public bool DestroyTextDraw(IPlayerTextDraw textDraw)
+	{
+		var ret = Player_DestroyTextDraw(Id, textDraw.Id);
+		textDrawPool?.Remove(textDraw.Id);
+		return ret;
+>>>>>>> 3d910f4 (wip)
 	}
 
 	public void SetWeaponAmmo(WeaponSlotData data)

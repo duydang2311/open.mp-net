@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Numerics;
+using Omp.Net.Entities.TextDraw;
 using Omp.Net.Shared;
 using Omp.Net.Shared.Data;
 using Omp.Net.Shared.Enums;
@@ -17,6 +18,7 @@ public interface IPlayer : IEntity
 	bool UseWidescreen { get; set; }
 	bool UseStuntBonuses { set; }
 	bool UseCameraTargeting { get; set; }
+	IEnumerable<IPlayerTextDraw> TextDraws { get; }
 
 	PeerNetworkData NetworkData { get; }
 	uint Ping { get; }
