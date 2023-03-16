@@ -21,5 +21,5 @@ internal static class EntityNative
 	public static extern int Entity_GetVirtualWorld(IntPtr entity);
 
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
-	public static extern void Entity_SetVirtualWorld(IntPtr entity);
+	public static extern void Entity_SetVirtualWorld(IntPtr entity, int vw);
 }
