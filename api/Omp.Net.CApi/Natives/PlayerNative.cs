@@ -9,6 +9,9 @@ namespace Omp.Net.CApi.Natives;
 internal static partial class PlayerNative
 {
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
+	public static extern IntPtr Player_GetHandleById(int id);
+
+	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
 	public static extern void Player_Kick(IntPtr player);
 
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion, CharSet = CharSet.Ansi)]
