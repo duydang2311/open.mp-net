@@ -14,25 +14,27 @@ public abstract class EntityPool<T> : IEntityPool<T> where T : class
 
 	public virtual T Create(IntPtr nativeHandle)
 	{
-		return factory.Create(nativeHandle, Entity_GetId(nativeHandle));
+		var entity = factory.Create(nativeHandle, Entity_GetId(nativeHandle));
+		cache.Add(nativeHandle, new WeakReference<T>(entity));
+		return entity;
 	}
 
 	public virtual T Create(IntPtr nativeHandle, int id)
 	{
-		return factory.Create(nativeHandle, id);
+		var entity = factory.Create(nativeHandle, id);
+		cache.Add(nativeHandle, new WeakReference<T>(entity));
+		return entity;
 	}
 
 	public virtual T Get(IntPtr nativeHandle)
 	{
 		if (!cache.TryGetValue(nativeHandle, out var reference))
 		{
-			var entity = factory.Create(nativeHandle);
-			cache.Add(nativeHandle, new WeakReference<T>(entity));
-			return entity;
+			return Create(nativeHandle);
 		}
 		if (!reference.TryGetTarget(out var cachedEntity))
 		{
-			var entity = factory.Create(nativeHandle);
+			var entity = factory.Create(nativeHandle, Entity_GetId(nativeHandle));
 			reference.SetTarget(entity);
 			return entity;
 		}
@@ -43,9 +45,7 @@ public abstract class EntityPool<T> : IEntityPool<T> where T : class
 	{
 		if (!cache.TryGetValue(nativeHandle, out var reference))
 		{
-			var entity = factory.Create(nativeHandle, id);
-			cache.Add(nativeHandle, new WeakReference<T>(entity));
-			return entity;
+			return Create(nativeHandle, id);
 		}
 		if (!reference.TryGetTarget(out var cachedEntity))
 		{
