@@ -9,6 +9,7 @@ public static class ServiceCollectionExtensions
 		return self
 			.AddSingleton(Core.Instance.TextDrawFactory)
 			.AddSingleton(Core.Instance.PlayerPool)
+			.AddSingleton(Core.Instance.GlobalTextDrawPool)
 		;
 	}
 }
