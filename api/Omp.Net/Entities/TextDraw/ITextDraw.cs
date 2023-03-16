@@ -6,9 +6,10 @@ namespace Omp.Net.Entities.TextDraw;
 
 public interface ITextDraw
 {
+	IntPtr NativeHandle { get; }
 	int Id { get; }
 	Vector2 Position { get; set; }
-	int Alignment { get; set; }
+	TextDrawAlignment Alignment { get; set; }
 	Color Color { get; set; }
 	Color BoxColor { get; set; }
 	Color BackgroundColor { get; set; }
@@ -18,12 +19,14 @@ public interface ITextDraw
 	int PreviewModel { get; set; }
 	Vector3 PreviewRotation { get; set; }
 	float PreviewZoom { get; set; }
-	int PreviewVehiclePrimaryColor { get; set; }
-	int PreviewVehicleSecondaryColor { get; set; }
 	bool IsSelectable { get; set; }
 	int Shadow { get; set; }
 	bool IsProportional { get; set; }
 	string Text { get; set; }
 	Vector2 TextSize { get; set; }
 	bool UseBox { get; set; }
+
+	void GetPreviewVehicleColor(out int primaryColor, out int secondaryColor);
+	void SetPreviewVehicleColor(int primaryColor, int secondaryColor);
+	void Restream();
 }
