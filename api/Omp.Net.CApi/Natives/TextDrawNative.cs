@@ -1,4 +1,3 @@
-using System.Drawing;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using Omp.Net.Shared.Enums;
@@ -87,7 +86,16 @@ internal static class TextDrawNative
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
 	public static extern IntPtr TextDraw_CreatePreviewModel(Vector2 position, int model);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
+	public static extern void TextDraw_ShowForPlayer(IntPtr td, IntPtr player);
+	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
+	public static extern void TextDraw_HideForPlayer(IntPtr td, IntPtr player);
+	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
+	public static extern bool TextDraw_IsShownForPlayer(IntPtr td, IntPtr player);
+	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
+	public static extern void TextDraw_SetTextForPlayer(IntPtr td, IntPtr player, string text);
 
+
+	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
 	public static extern void Player_BeginSelection(IntPtr player, uint highlight);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
 	public static extern bool Player_IsSelecting(IntPtr player);
@@ -97,4 +105,10 @@ internal static class TextDrawNative
 	public static extern IntPtr PlayerTextDraw_CreateText(IntPtr player, Vector2 position, string text);
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
 	public static extern IntPtr PlayerTextDraw_CreatePreviewModel(IntPtr player, Vector2 position, int model);
+	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
+	public static extern void PlayerTextDraw_Show(IntPtr td);
+	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
+	public static extern void PlayerTextDraw_Hide(IntPtr td);
+	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
+	public static extern bool PlayerTextDraw_IsShown(IntPtr td);
 }
