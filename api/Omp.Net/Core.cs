@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using Omp.Net.CApi.Natives;
+using Omp.Net.Entities;
 using Omp.Net.Entities.Player;
 using Omp.Net.Entities.TextDraw;
 using Omp.Net.Threading;
@@ -10,26 +11,22 @@ public sealed class Core
 {
 	public static Core Instance { get; private set; } = null!;
 
+	public IEntityPool<IPlayer> PlayerPool { get; }
+	public ITextDrawPool GlobalTextDrawPool { get; }
+	public ITextDrawFactory TextDrawFactory => textDrawFactory;
+
 	internal Core(BaseEntry entry)
 	{
 		Instance = this;
+		this.entry = entry;
 		tickSchedulerFactory = entry.GetTickSchedulerFactory();
-		playerFactory = entry.GetPlayerFactory();
+		PlayerPool = new PlayerPool(entry.GetPlayerFactory());
+		GlobalTextDrawPool = new TextDrawPool(entry.GetTextDrawFactory());
 		textDrawFactory = entry.GetTextDrawFactory();
 		tickScheduler = tickSchedulerFactory.Create(Thread.CurrentThread);
 
 		tickDelegate = tickScheduler.Tick;
 		CoreNative.Core_SetTickDelegate(Marshal.GetFunctionPointerForDelegate(tickDelegate));
-	}
-
-	public IPlayerFactory GetPlayerFactory()
-	{
-		return playerFactory;
-	}
-
-	public ITextDrawFactory GetTextDrawFactory()
-	{
-		return textDrawFactory;
 	}
 
 	public void Invoke(Action action)
@@ -47,10 +44,15 @@ public sealed class Core
 		return tickScheduler.ScheduleAsync(func);
 	}
 
+	public ITextDrawFactory GetPlayerTextDrawFactory(IPlayer player)
+	{
+		return entry.GetPlayerTextDrawFactory(player);
+	}
+
 	private delegate void TickDelegate();
 	private readonly ITickScheduler tickScheduler;
 	private readonly TickDelegate tickDelegate;
 	private readonly ITickSchedulerFactory tickSchedulerFactory;
-	private readonly IPlayerFactory playerFactory;
 	private readonly ITextDrawFactory textDrawFactory;
+	private readonly BaseEntry entry;
 }

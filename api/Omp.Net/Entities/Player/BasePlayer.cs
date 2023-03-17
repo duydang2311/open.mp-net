@@ -1,6 +1,7 @@
 using System.Drawing;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using Omp.Net.Entities.TextDraw;
 using Omp.Net.Shared;
 using Omp.Net.Shared.Data;
 using Omp.Net.Shared.Enums;
@@ -10,9 +11,24 @@ namespace Omp.Net.Entities;
 
 public class BasePlayer : BaseEntity, IPlayer
 {
+	private readonly object mutex = new();
+	private ITextDrawPool? textDrawPool;
+
 	public BasePlayer(IntPtr nativeHandle, int id) : base(nativeHandle, id) { }
 
 	public bool IsBot => Player_IsBot(NativeHandle);
+
+	public IEnumerable<IPlayerTextDraw> TextDraws
+	{
+		get
+		{
+			if (textDrawPool is null)
+			{
+				return Array.Empty<IPlayerTextDraw>();
+			}
+			return GetTextDrawPool().GetAll().Cast<IPlayerTextDraw>();
+		}
+	}
 
 	public bool UseGhostMode { get => Player_IsGhostModeEnabled(NativeHandle); set => Player_ToggleGhostMode(NativeHandle, value); }
 
@@ -49,7 +65,6 @@ public class BasePlayer : BaseEntity, IPlayer
 		get => Player_HasCameraTargeting(NativeHandle);
 		set => Player_UseCameraTargeting(NativeHandle, value);
 	}
-
 
 	public PeerNetworkData NetworkData => Player_GetNetworkData(NativeHandle);
 
@@ -343,8 +358,7 @@ public class BasePlayer : BaseEntity, IPlayer
 		var streamedPlayers = new IPlayer[length];
 		for (var i = 0; i != length; ++i)
 		{
-			var nativeHandle = Marshal.ReadIntPtr(ptr, i * 4);
-			// TODO: use entity pool
+			streamedPlayers[i] = Core.Instance.PlayerPool.Get(Marshal.ReadIntPtr(ptr, i * 4));
 		}
 		Marshal.FreeHGlobal(ptr);
 		return streamedPlayers;
@@ -605,5 +619,24 @@ public class BasePlayer : BaseEntity, IPlayer
 	public void UnsetMapIcon(int id)
 	{
 		Player_UnsetMapIcon(NativeHandle, id);
+	}
+
+	public IPlayerTextDraw Create(Vector2 position, string text)
+	{
+		return (IPlayerTextDraw)GetTextDrawPool().Create(position, text);
+	}
+
+	public IPlayerTextDraw Create(Vector2 position, int model)
+	{
+		return (IPlayerTextDraw)GetTextDrawPool().Create(position, model);
+	}
+
+	private ITextDrawPool GetTextDrawPool()
+	{
+		lock (mutex)
+		{
+			textDrawPool ??= new TextDrawPool(Core.Instance.GetPlayerTextDrawFactory(this));
+			return textDrawPool;
+		}
 	}
 }

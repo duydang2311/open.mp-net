@@ -7,8 +7,8 @@ public static class ServiceCollectionExtensions
 	public static IServiceCollection AddOmpServices(this IServiceCollection self)
 	{
 		return self
-			.AddSingleton(Core.Instance.GetTextDrawFactory())
-			.AddSingleton(Core.Instance.GetPlayerFactory())
+			.AddSingleton(Core.Instance.PlayerPool)
+			.AddSingleton(Core.Instance.GlobalTextDrawPool)
 		;
 	}
 }
