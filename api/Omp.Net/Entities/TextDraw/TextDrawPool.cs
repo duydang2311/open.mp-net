@@ -1,3 +1,4 @@
+using System.Numerics;
 using Omp.Net.Entities.TextDraw;
 
 namespace Omp.Net.Entities;
@@ -5,8 +6,26 @@ namespace Omp.Net.Entities;
 public class TextDrawPool : ITextDrawPool
 {
 	private readonly IDictionary<IntPtr, WeakReference<ITextDraw>> cache = new Dictionary<IntPtr, WeakReference<ITextDraw>>();
+	private readonly ITextDrawFactory factory;
 
-	public TextDrawPool() { }
+	public TextDrawPool(ITextDrawFactory factory)
+	{
+		this.factory = factory;
+	}
+
+	public ITextDraw Create(Vector2 position, string text)
+	{
+		var td = factory.Create(position, text);
+		cache.Add(td.NativeHandle, new WeakReference<ITextDraw>(td));
+		return td;
+	}
+
+	public ITextDraw Create(Vector2 position, int model)
+	{
+		var td = factory.Create(position, model);
+		cache.Add(td.NativeHandle, new WeakReference<ITextDraw>(td));
+		return td;
+	}
 
 	public virtual bool TryGet(IntPtr nativeHandle, out ITextDraw textDraw)
 	{
