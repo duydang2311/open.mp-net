@@ -18,9 +18,10 @@ public sealed class Core
 	internal Core(BaseEntry entry)
 	{
 		Instance = this;
+		this.entry = entry;
 		tickSchedulerFactory = entry.GetTickSchedulerFactory();
 		PlayerPool = new PlayerPool(entry.GetPlayerFactory());
-		GlobalTextDrawPool = new TextDrawPool();
+		GlobalTextDrawPool = new TextDrawPool(entry.GetTextDrawFactory());
 		textDrawFactory = entry.GetTextDrawFactory();
 		tickScheduler = tickSchedulerFactory.Create(Thread.CurrentThread);
 
@@ -43,9 +44,15 @@ public sealed class Core
 		return tickScheduler.ScheduleAsync(func);
 	}
 
+	public ITextDrawFactory GetPlayerTextDrawFactory(IPlayer player)
+	{
+		return entry.GetPlayerTextDrawFactory(player);
+	}
+
 	private delegate void TickDelegate();
 	private readonly ITickScheduler tickScheduler;
 	private readonly TickDelegate tickDelegate;
 	private readonly ITickSchedulerFactory tickSchedulerFactory;
 	private readonly ITextDrawFactory textDrawFactory;
+	private readonly BaseEntry entry;
 }

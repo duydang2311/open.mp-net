@@ -19,6 +19,11 @@ public abstract class BaseEntry
 		return new TextDrawFactory();
 	}
 
+	public virtual ITextDrawFactory GetPlayerTextDrawFactory(IPlayer player)
+	{
+		return new PlayerTextDrawFactory(player);
+	}
+
 	public virtual ITickSchedulerFactory GetTickSchedulerFactory()
 	{
 		return new ActionTickSchedulerFactory();
