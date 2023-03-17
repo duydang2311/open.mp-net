@@ -134,4 +134,6 @@ public interface IPlayer : IEntity
 	void SendClientCheck(int actionType, int address, int offset, int count);
 	void ClearTasks(PlayerAnimationSyncType syncType = PlayerAnimationSyncType.NoSync);
 	bool IsStreamedInFor(IPlayer other);
+	IPlayerTextDraw Create(Vector2 position, string text);
+	IPlayerTextDraw Create(Vector2 position, int model);
 }

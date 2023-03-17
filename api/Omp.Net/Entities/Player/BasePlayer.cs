@@ -11,6 +11,7 @@ namespace Omp.Net.Entities;
 
 public class BasePlayer : BaseEntity, IPlayer
 {
+	private readonly object mutex = new();
 	private ITextDrawPool? textDrawPool;
 
 	public BasePlayer(IntPtr nativeHandle, int id) : base(nativeHandle, id) { }
@@ -21,8 +22,11 @@ public class BasePlayer : BaseEntity, IPlayer
 	{
 		get
 		{
-			textDrawPool ??= new TextDrawPool();
-			return textDrawPool.GetAll().Cast<IPlayerTextDraw>();
+			if (textDrawPool is null)
+			{
+				return Array.Empty<IPlayerTextDraw>();
+			}
+			return GetTextDrawPool().GetAll().Cast<IPlayerTextDraw>();
 		}
 	}
 
@@ -559,27 +563,12 @@ public class BasePlayer : BaseEntity, IPlayer
 
 	public void SetSpectating(bool spectating)
 	{
-<<<<<<< HEAD
 		Player_SetSpectating(NativeHandle, spectating);
-=======
-		return Core.Instance.TextDrawFactory.Create(this, position, text);
->>>>>>> 3d910f4 (wip)
 	}
 
 	public void SetTransform(Vector3 vec3)
 	{
-<<<<<<< HEAD
 		Player_SetTransform(NativeHandle, vec3);
-=======
-		return Core.Instance.TextDrawFactory.Create(this, position, model);
-	}
-
-	public bool DestroyTextDraw(IPlayerTextDraw textDraw)
-	{
-		var ret = Player_DestroyTextDraw(Id, textDraw.Id);
-		textDrawPool?.Remove(textDraw.Id);
-		return ret;
->>>>>>> 3d910f4 (wip)
 	}
 
 	public void SetWeaponAmmo(WeaponSlotData data)
@@ -630,5 +619,24 @@ public class BasePlayer : BaseEntity, IPlayer
 	public void UnsetMapIcon(int id)
 	{
 		Player_UnsetMapIcon(NativeHandle, id);
+	}
+
+	public IPlayerTextDraw Create(Vector2 position, string text)
+	{
+		return (IPlayerTextDraw)GetTextDrawPool().Create(position, text);
+	}
+
+	public IPlayerTextDraw Create(Vector2 position, int model)
+	{
+		return (IPlayerTextDraw)GetTextDrawPool().Create(position, model);
+	}
+
+	private ITextDrawPool GetTextDrawPool()
+	{
+		lock (mutex)
+		{
+			textDrawPool ??= new TextDrawPool(Core.Instance.GetPlayerTextDrawFactory(this));
+			return textDrawPool;
+		}
 	}
 }
