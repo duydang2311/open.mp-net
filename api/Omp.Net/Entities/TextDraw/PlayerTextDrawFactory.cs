@@ -1,4 +1,5 @@
 using System.Numerics;
+using Omp.Net.Entities.Player;
 using static Omp.Net.CApi.Natives.TextDrawNative;
 
 namespace Omp.Net.Entities.TextDraw;

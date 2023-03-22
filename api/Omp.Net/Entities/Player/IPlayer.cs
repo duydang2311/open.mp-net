@@ -5,7 +5,7 @@ using Omp.Net.Shared;
 using Omp.Net.Shared.Data;
 using Omp.Net.Shared.Enums;
 
-namespace Omp.Net.Entities;
+namespace Omp.Net.Entities.Player;
 
 public interface IPlayer : IEntity
 {

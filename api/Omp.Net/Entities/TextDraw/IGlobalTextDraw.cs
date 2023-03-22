@@ -1,3 +1,5 @@
+using Omp.Net.Entities.Player;
+
 namespace Omp.Net.Entities.TextDraw;
 
 public interface IGlobalTextDraw : ITextDraw

@@ -7,7 +7,7 @@ using Omp.Net.Shared.Data;
 using Omp.Net.Shared.Enums;
 using static Omp.Net.CApi.Natives.PlayerNative;
 
-namespace Omp.Net.Entities;
+namespace Omp.Net.Entities.Player;
 
 public class BasePlayer : BaseEntity, IPlayer
 {
