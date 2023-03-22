@@ -3,6 +3,7 @@ using Omp.Net.CApi.Natives;
 using Omp.Net.Entities;
 using Omp.Net.Entities.Player;
 using Omp.Net.Entities.TextDraw;
+using Omp.Net.Entities.Vehicle;
 using Omp.Net.Threading;
 
 namespace Omp.Net;
@@ -12,6 +13,7 @@ public sealed class Core
 	public static Core Instance { get; private set; } = null!;
 
 	public IEntityPool<IPlayer> PlayerPool { get; }
+	public IEntityPool<IVehicle> VehiclePool { get; }
 	public ITextDrawPool GlobalTextDrawPool { get; }
 	public ITextDrawFactory TextDrawFactory => textDrawFactory;
 
@@ -21,6 +23,7 @@ public sealed class Core
 		this.entry = entry;
 		tickSchedulerFactory = entry.GetTickSchedulerFactory();
 		PlayerPool = new PlayerPool(entry.GetPlayerFactory());
+		VehiclePool = new VehiclePool(entry.GetVehicleFactory());
 		GlobalTextDrawPool = new TextDrawPool(entry.GetTextDrawFactory());
 		textDrawFactory = entry.GetTextDrawFactory();
 		tickScheduler = tickSchedulerFactory.Create(Thread.CurrentThread);
