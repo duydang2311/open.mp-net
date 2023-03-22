@@ -46,13 +46,13 @@ internal static class VehicleNative
 	public static extern bool Vehicle_UpdateFromTrailerSync(IntPtr vehicle, VehicleTrailerSyncPacket unoccupiedSync, IntPtr player);
 
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
-	public static extern IntPtr Vehicle_StreamedForPlayers(IntPtr vehicle);
+	public static extern uint Vehicle_StreamedForPlayers(IntPtr vehicle, IntPtr players_ptr);
 
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
 	public static extern IntPtr Vehicle_GetDriver(IntPtr vehicle);
 
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
-	public static extern IntPtr Vehicle_GetPassengers(IntPtr vehicle);
+	public static extern uint Vehicle_GetPassengers(IntPtr vehicle, IntPtr passengers_ptr);
 
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion, CharSet = CharSet.Ansi)]
 	public static extern void Vehicle_SetPlate(IntPtr vehicle, string plate);
@@ -145,7 +145,7 @@ internal static class VehicleNative
 	public static extern void Vehicle_UpdateCarriage(IntPtr vehicle, Vector3 pos, Vector3 veloc);
 
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
-	public static extern IntPtr Vehicle_GetCarriages(IntPtr vehicle);
+	public static extern uint Vehicle_GetCarriages(IntPtr vehicle, IntPtr carriages_ptr);
 
 	[DllImport(NativeInterop.DllName, CallingConvention = NativeInterop.NativeCallingConvetion)]
 	public static extern void Vehicle_SetVelocity(IntPtr vehicle, Vector3 velocity);
