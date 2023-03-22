@@ -1,5 +1,6 @@
 using System.Numerics;
 using System.Runtime.InteropServices;
+using Omp.Net.Entities.Player;
 using Omp.Net.Shared.Data;
 using static Omp.Net.CApi.Natives.VehicleNative;
 

@@ -1,4 +1,5 @@
 using System.Numerics;
+using Omp.Net.Entities.Player;
 using Omp.Net.Shared.Data;
 
 namespace Omp.Net.Entities.Vehicle;
