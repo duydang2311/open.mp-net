@@ -17,6 +17,7 @@ public sealed partial class CoreEvents
 		vehiclePool = core.VehiclePool;
 
 		RegisterNativePlayerEvents();
+		RegisterNativeVehicleEvents();
 	}
 }
 
