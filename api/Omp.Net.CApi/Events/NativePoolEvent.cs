@@ -1,7 +1,6 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Omp.Net.Shared;
-using Omp.Net.Shared.Data;
 
 namespace Omp.Net.CApi.Events;
 

@@ -17,6 +17,7 @@ internal static class NativeClassEvent
 		{
 			return 1;
 		}
-		return NativeOnPlayerRequestClass(player, classId) ? 1 : 0;
+		var ret = NativeOnPlayerRequestClass(player, classId);
+		return Unsafe.As<bool, int>(ref ret);
 	}
 }

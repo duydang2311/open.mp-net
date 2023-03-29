@@ -26,6 +26,7 @@ internal static class NativeCustomModelEvent
 		{
 			return 1;
 		}
-		return NativeOnPlayerRequestDownload(player, type, checksum) ? 1 : 0;
+		var ret = NativeOnPlayerRequestDownload(player, type, checksum);
+		return Unsafe.As<bool, int>(ref ret);
 	}
 }

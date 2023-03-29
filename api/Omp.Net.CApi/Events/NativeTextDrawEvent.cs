@@ -35,7 +35,8 @@ internal static class NativeTextDrawEvent
 		{
 			return 1;
 		}
-		return NativeOnPlayerCancelTextDrawSelection(player) ? 1 : 0;
+		var ret = NativeOnPlayerCancelTextDrawSelection(player);
+		return Unsafe.As<bool, int>(ref ret);
 	}
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
@@ -45,6 +46,7 @@ internal static class NativeTextDrawEvent
 		{
 			return 1;
 		}
-		return NativeOnPlayerCancelPlayerTextDrawSelection(player) ? 1 : 0;
+		var ret = NativeOnPlayerCancelPlayerTextDrawSelection(player);
+		return Unsafe.As<bool, int>(ref ret);
 	}
 }
