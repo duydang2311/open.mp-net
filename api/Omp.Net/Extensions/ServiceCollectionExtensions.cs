@@ -8,6 +8,7 @@ public static class ServiceCollectionExtensions
 	{
 		return self
 			.AddSingleton(Core.Instance.PlayerPool)
+			.AddSingleton(Core.Instance.VehiclePool)
 			.AddSingleton(Core.Instance.GlobalTextDrawPool)
 		;
 	}
