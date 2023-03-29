@@ -38,7 +38,7 @@ public sealed partial class CoreEvents
 	public event TrailerUpdateDelegate? TrailerUpdate;
 	public event VehicleSirenStateChangeDelegate? VehicleSirenStateChange;
 
-	private void RegisterNativeVehicleEvents()
+	private void RegisterVehicleEvents()
 	{
 		NativeOnVehicleStreamIn += HandleNativeOnVehicleStreamIn;
 		NativeOnVehicleStreamOut += HandleNativeOnVehicleStreamOut;

@@ -66,7 +66,7 @@ public sealed partial class CoreEvents
 	public event ClientCheckResponseDelegate? ClientCheckResponse;
 	public event PlayerUpdateDelegate? PlayerUpdate;
 
-	private void RegisterNativePlayerEvents()
+	private void RegisterPlayerEvents()
 	{
 		NativeOnIncomingConnection += HandleNativeOnIncomingConnection;
 		NativeOnPlayerConnect += HandleNativeOnPlayerConnect;
