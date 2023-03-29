@@ -25,7 +25,8 @@ internal static partial class NativeConsoleEvent
 		unsafe
 		{
 			var senderType = *((int*)senderDataPtr + 0);
-			return NativeOnConsoleText(Marshal.PtrToStringAnsi(command) ?? string.Empty, Marshal.PtrToStringAnsi(parameters) ?? string.Empty, senderType) ? 1 : 0;
+			var ret = NativeOnConsoleText(Marshal.PtrToStringAnsi(command) ?? string.Empty, Marshal.PtrToStringAnsi(parameters) ?? string.Empty, senderType);
+			return *(int*)&ret;
 		}
 	}
 

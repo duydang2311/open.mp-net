@@ -80,7 +80,8 @@ internal static class NativeVehicleEvent
 		{
 			return 1;
 		}
-		return NativeOnVehiclePaintJob(player, vehicle, paintJob) ? 1 : 0;
+		var ret = NativeOnVehiclePaintJob(player, vehicle, paintJob);
+		return Unsafe.As<bool, int>(ref ret);
 	}
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
@@ -90,7 +91,8 @@ internal static class NativeVehicleEvent
 		{
 			return 1;
 		}
-		return NativeOnVehicleMod(player, vehicle, component) ? 1 : 0;
+		var ret = NativeOnVehicleMod(player, vehicle, component);
+		return Unsafe.As<bool, int>(ref ret);
 	}
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
@@ -100,7 +102,8 @@ internal static class NativeVehicleEvent
 		{
 			return 1;
 		}
-		return NativeOnVehicleRespray(player, vehicle, color1, color2) ? 1 : 0;
+		var ret = NativeOnVehicleRespray(player, vehicle, color1, color2);
+		return Unsafe.As<bool, int>(ref ret);
 	}
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
@@ -122,7 +125,8 @@ internal static class NativeVehicleEvent
 		{
 			return 1;
 		}
-		return NativeOnUnoccupiedVehicleUpdate(vehicle, player, data) ? 1 : 0;
+		var ret = NativeOnUnoccupiedVehicleUpdate(vehicle, player, data);
+		return Unsafe.As<bool, int>(ref ret);
 	}
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
@@ -132,7 +136,8 @@ internal static class NativeVehicleEvent
 		{
 			return 1;
 		}
-		return NativeOnTrailerUpdate(player, trailer) ? 1 : 0;
+		var ret = NativeOnTrailerUpdate(player, trailer);
+		return Unsafe.As<bool, int>(ref ret);
 	}
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
@@ -142,6 +147,7 @@ internal static class NativeVehicleEvent
 		{
 			return 1;
 		}
-		return NativeOnVehicleSirenStateChange(player, vehicle, sirenState) ? 1 : 0;
+		var ret = NativeOnVehicleSirenStateChange(player, vehicle, sirenState);
+		return Unsafe.As<bool, int>(ref ret);
 	}
 }

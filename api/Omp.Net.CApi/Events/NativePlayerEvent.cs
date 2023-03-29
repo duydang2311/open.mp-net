@@ -124,7 +124,8 @@ internal static partial class NativePlayerEvent
 		{
 			return 1;
 		}
-		return NativeOnPlayerText(player, Marshal.PtrToStringAnsi(message) ?? string.Empty) ? 1 : 0;
+		var ret = NativeOnPlayerText(player, Marshal.PtrToStringAnsi(message) ?? string.Empty);
+		return Unsafe.As<bool, int>(ref ret);
 	}
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
@@ -134,7 +135,8 @@ internal static partial class NativePlayerEvent
 		{
 			return 1;
 		}
-		return NativeOnPlayerCommandText(player, Marshal.PtrToStringAnsi(message) ?? string.Empty) ? 1 : 0;
+		var ret = NativeOnPlayerCommandText(player, Marshal.PtrToStringAnsi(message) ?? string.Empty);
+		return Unsafe.As<bool, int>(ref ret);
 	}
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
@@ -144,7 +146,8 @@ internal static partial class NativePlayerEvent
 		{
 			return 1;
 		}
-		return NativeOnPlayerShotMissed(player, bulletData) ? 1 : 0;
+		var ret = NativeOnPlayerShotMissed(player, bulletData);
+		return Unsafe.As<bool, int>(ref ret);
 	}
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
 	private static int OnPlayerShotPlayer(EntityId player, EntityId target, PlayerBulletData bulletData)
@@ -153,7 +156,8 @@ internal static partial class NativePlayerEvent
 		{
 			return 1;
 		}
-		return NativeOnPlayerShotPlayer(player, target, bulletData) ? 1 : 0;
+		var ret = NativeOnPlayerShotPlayer(player, target, bulletData);
+		return Unsafe.As<bool, int>(ref ret);
 	}
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
@@ -163,7 +167,8 @@ internal static partial class NativePlayerEvent
 		{
 			return 1;
 		}
-		return NativeOnPlayerShotVehicle(player, target, bulletData) ? 1 : 0;
+		var ret = NativeOnPlayerShotVehicle(player, target, bulletData);
+		return Unsafe.As<bool, int>(ref ret);
 	}
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
@@ -173,7 +178,8 @@ internal static partial class NativePlayerEvent
 		{
 			return 1;
 		}
-		return NativeOnPlayerShotObject(player, target, bulletData) ? 1 : 0;
+		var ret = NativeOnPlayerShotObject(player, target, bulletData);
+		return Unsafe.As<bool, int>(ref ret);
 	}
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
@@ -183,7 +189,8 @@ internal static partial class NativePlayerEvent
 		{
 			return 1;
 		}
-		return NativeOnPlayerShotPlayerObject(player, target, bulletData) ? 1 : 0;
+		var ret = NativeOnPlayerShotPlayerObject(player, target, bulletData);
+		return Unsafe.As<bool, int>(ref ret);
 	}
 
 	[UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
@@ -259,6 +266,7 @@ internal static partial class NativePlayerEvent
 		{
 			return 1;
 		}
-		return NativeOnPlayerUpdate(player, now) ? 1 : 0;
+		var ret = NativeOnPlayerUpdate(player, now);
+		return Unsafe.As<bool, int>(ref ret);
 	}
 }

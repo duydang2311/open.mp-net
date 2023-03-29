@@ -8,10 +8,11 @@ using Omp.Net.Threading;
 
 namespace Omp.Net;
 
-public sealed class Core
+public sealed partial class Core
 {
 	public static Core Instance { get; private set; } = null!;
 
+	public CoreEvents Events { get; }
 	public IEntityPool<IPlayer> PlayerPool { get; }
 	public IEntityPool<IVehicle> VehiclePool { get; }
 	public ITextDrawPool GlobalTextDrawPool { get; }
@@ -21,11 +22,13 @@ public sealed class Core
 	{
 		Instance = this;
 		this.entry = entry;
-		tickSchedulerFactory = entry.GetTickSchedulerFactory();
+
+		Events = new CoreEvents(this);
 		PlayerPool = new PlayerPool(entry.GetPlayerFactory());
 		VehiclePool = new VehiclePool(entry.GetVehicleFactory());
 		GlobalTextDrawPool = new TextDrawPool(entry.GetTextDrawFactory());
 		textDrawFactory = entry.GetTextDrawFactory();
+		tickSchedulerFactory = entry.GetTickSchedulerFactory();
 		tickScheduler = tickSchedulerFactory.Create(Thread.CurrentThread);
 
 		tickDelegate = tickScheduler.Tick;
